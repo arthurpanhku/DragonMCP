@@ -8,6 +8,10 @@
   DragonMCP 是一个专为 AI Agent 设计的 Model Context Protocol (MCP) 服务器，旨在提供大中国内地、中国香港及亚洲地区的本地生活服务接口。
 </div>
 
+<a href="https://glama.ai/mcp/servers/arthurpanhku/dragon-mcp">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/arthurpanhku/dragon-mcp/badge" alt="DragonMCP MCP server" />
+</a>
+
 ---
 
 ## 🌍 Project Overview / 项目概述
