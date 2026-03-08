@@ -8,7 +8,7 @@ function App() {
     <>
       <div>
         <a href="https://github.com/arthurpanhku/DragonMCP" target="_blank">
-          <img src="/logo.png" className="logo" alt="DragonMCP logo" style={{ borderRadius: '50%' }} />
+          <img src="/logo.png" className="logo" alt="DragonMCP logo" />
         </a>
       </div>
       <h1>DragonMCP</h1>

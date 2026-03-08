@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="public/logo.png" alt="DragonMCP Logo" width="200" height="200" style="border-radius: 50%;">
+  <img src="public/logo.png" alt="DragonMCP Logo" width="200">
 
   # DragonMCP
 
