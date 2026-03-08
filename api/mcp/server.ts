@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import { z } from "zod";
 import { config } from "../config/index.js";
+import { MTRService } from "../services/mtr/service.js";
 
 // Create an MCP server
 export const mcpServer = new McpServer({
@@ -10,7 +11,26 @@ export const mcpServer = new McpServer({
 });
 
 // -------------------------------------------------------------------------
-// Payment Tools
+// Travel Tools
+// -------------------------------------------------------------------------
+
+mcpServer.tool(
+    "search_mtr_schedule",
+    "Search for real-time MTR train schedule (Island Line & Tsuen Wan Line)",
+    {
+        from: z.string().describe("Starting station name (e.g., Admiralty, Central, Mong Kok)"),
+        to: z.string().describe("Destination station name"),
+    },
+    async ({ from, to }) => {
+        const result = await MTRService.getNextTrains(from, to);
+        return {
+            content: [{ type: "text", text: result }],
+        };
+    }
+);
+
+// -------------------------------------------------------------------------
+// Payment Tools (Mock)
 // -------------------------------------------------------------------------
 
 mcpServer.tool(
@@ -48,7 +68,7 @@ mcpServer.tool(
 );
 
 // -------------------------------------------------------------------------
-// Travel Tools
+// Other Tools (Mock)
 // -------------------------------------------------------------------------
 
 mcpServer.tool(
@@ -68,26 +88,6 @@ mcpServer.tool(
 );
 
 mcpServer.tool(
-    "search_public_transport",
-    "Search for public transport (MTR, High Speed Rail)",
-    {
-        origin: z.string().describe("Start location"),
-        destination: z.string().describe("End location"),
-        type: z.enum(["mtr", "hsr"]).describe("Transport type"),
-    },
-    async ({ origin, destination, type }) => {
-        console.log(`[Transport] ${type}: ${origin} -> ${destination}`);
-        return {
-            content: [{ type: "text", text: `Found ${type} routes from ${origin} to ${destination}` }],
-        };
-    }
-);
-
-// -------------------------------------------------------------------------
-// E-commerce & Lifestyle Tools
-// -------------------------------------------------------------------------
-
-mcpServer.tool(
     "search_product",
     "Search for products on e-commerce platforms",
     {
@@ -98,41 +98,6 @@ mcpServer.tool(
         console.log(`[Shopping] ${platform}: ${keyword}`);
         return {
             content: [{ type: "text", text: `Found products for "${keyword}" on ${platform}` }],
-        };
-    }
-);
-
-mcpServer.tool(
-    "order_food",
-    "Order food delivery",
-    {
-        restaurant: z.string().describe("Restaurant name"),
-        items: z.array(z.string()).describe("List of items to order"),
-        platform: z.enum(["meituan", "eleme"]).describe("Delivery platform"),
-    },
-    async ({ restaurant, items, platform }) => {
-        console.log(`[Food] ${platform}: ${restaurant} - ${items.join(", ")}`);
-        return {
-            content: [{ type: "text", text: `Ordered ${items.join(", ")} from ${restaurant} via ${platform}` }],
-        };
-    }
-);
-
-// -------------------------------------------------------------------------
-// Government Services Tools
-// -------------------------------------------------------------------------
-
-mcpServer.tool(
-    "hk_eservices_query",
-    "Query Hong Kong e-services",
-    {
-        service_type: z.string().describe("Type of government service"),
-        query: z.string().describe("Query details"),
-    },
-    async ({ service_type, query }) => {
-        console.log(`[HK Gov] ${service_type}: ${query}`);
-        return {
-            content: [{ type: "text", text: `Queried HK e-service: ${service_type}` }],
         };
     }
 );
