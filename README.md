@@ -5,7 +5,7 @@
 
   DragonMCP is a Model Context Protocol (MCP) server designed for AI Agents to interact with local life services in Greater China (Mainland China, Hong Kong) and Asia.
 
-  DragonMCP 是一个专为 AI Agent 设计的 Model Context Protocol (MCP) 服务器，旨在提供大中华区（中国内地、香港）及亚洲地区的本地生活服务接口。
+  DragonMCP 是一个专为 AI Agent 设计的 Model Context Protocol (MCP) 服务器，旨在提供大中国内地、中国香港及亚洲地区的本地生活服务接口。
 </div>
 
 ---
