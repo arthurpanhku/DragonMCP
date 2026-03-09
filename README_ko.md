@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="public/logo.png" alt="DragonMCP Logo" width="200">
+  <img src="assets/logo.png" alt="DragonMCP Logo" width="200">
 
   # DragonMCP
 
@@ -122,7 +122,7 @@ graph TD
 SSE 지원으로 개발 서버 시작:
 
 ```bash
-npm run server:dev
+npm run dev
 ```
 
 서버는 `http://localhost:3000`에서 시작됩니다.
@@ -137,7 +137,7 @@ SSE 엔드포인트: `http://localhost:3000/mcp/sse`
   "mcpServers": {
     "DragonMCP": {
       "command": "node",
-      "args": ["/path/to/DragonMCP/api/dist/index.js"], 
+      "args": ["/path/to/DragonMCP/dist/server.js"], 
       "env": {
         "NODE_ENV": "production"
       }

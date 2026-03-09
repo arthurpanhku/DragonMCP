@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="public/logo.png" alt="DragonMCP Logo" width="200">
+  <img src="assets/logo.png" alt="DragonMCP Logo" width="200">
 
   # DragonMCP
 
@@ -122,7 +122,7 @@ graph TD
 SSEサポート付きで開発サーバーを起動します:
 
 ```bash
-npm run server:dev
+npm run dev
 ```
 
 サーバーは `http://localhost:3000` で起動します。
@@ -137,7 +137,7 @@ SSEエンドポイント: `http://localhost:3000/mcp/sse`
   "mcpServers": {
     "DragonMCP": {
       "command": "node",
-      "args": ["/path/to/DragonMCP/api/dist/index.js"], 
+      "args": ["/path/to/DragonMCP/dist/server.js"], 
       "env": {
         "NODE_ENV": "production"
       }

@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="public/logo.png" alt="DragonMCP Logo" width="200">
+  <img src="assets/logo.png" alt="DragonMCP Logo" width="200">
 
   # DragonMCP
 
@@ -122,7 +122,7 @@ Weitere Details finden Sie im [Technischen Architekturdokument](.trae/documents/
 Starten Sie den Entwicklungsserver mit SSE-Unterstützung:
 
 ```bash
-npm run server:dev
+npm run dev
 ```
 
 Der Server startet unter `http://localhost:3000`.
@@ -137,7 +137,7 @@ Fügen Sie Folgendes zu Ihrer `claude_desktop_config.json` hinzu:
   "mcpServers": {
     "DragonMCP": {
       "command": "node",
-      "args": ["/path/to/DragonMCP/api/dist/index.js"], 
+      "args": ["/path/to/DragonMCP/dist/server.js"], 
       "env": {
         "NODE_ENV": "production"
       }

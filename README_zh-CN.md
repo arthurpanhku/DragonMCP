@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="public/logo.png" alt="DragonMCP Logo" width="200">
+  <img src="assets/logo.png" alt="DragonMCP Logo" width="200">
 
   # DragonMCP
 
@@ -120,7 +120,7 @@ graph TD
 启动支持 SSE 的开发服务器:
 
 ```bash
-npm run server:dev
+npm run dev
 ```
 
 服务器将在 `http://localhost:3000` 启动。
@@ -135,7 +135,7 @@ SSE 端点: `http://localhost:3000/mcp/sse`
   "mcpServers": {
     "DragonMCP": {
       "command": "node",
-      "args": ["/path/to/DragonMCP/api/dist/index.js"], 
+      "args": ["/path/to/DragonMCP/dist/server.js"], 
       "env": {
         "NODE_ENV": "production"
       }
