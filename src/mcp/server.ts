@@ -1,15 +1,16 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { MTRService } from "../services/mtr/service.js";
-import { AmapService } from "../services/travel/amap/service.js";
-import { WeChatPayService } from "../services/payment/wechat/service.js";
-import { AlipayService } from "../services/payment/alipay/service.js";
-import { DidiService } from "../services/travel/didi/service.js";
-import { MeituanService } from "../services/lifestyle/meituan/service.js";
-import { TaobaoService } from "../services/ecommerce/taobao/service.js";
-import { GrabService } from "../services/travel/grab/service.js";
-import { LinePayService } from "../services/payment/linepay/service.js";
-import { NaverMapService } from "../services/travel/naver/service.js";
+import { MTRService } from "../services/hk/mtr/service.js";
+import { HKWeatherService } from "../services/hk/weather/service.js";
+import { AmapService } from "../services/cn/amap/service.js";
+import { WeChatPayService } from "../services/cn/wechat/service.js";
+import { AlipayService } from "../services/cn/alipay/service.js";
+import { DidiService } from "../services/cn/didi/service.js";
+import { MeituanService } from "../services/cn/meituan/service.js";
+import { TaobaoService } from "../services/cn/taobao/service.js";
+import { GrabService } from "../services/sg/grab/service.js";
+import { LinePayService } from "../services/jp/linepay/service.js";
+import { NaverMapService } from "../services/kr/naver/service.js";
 
 // Create an MCP server
 export const mcpServer = new McpServer({
@@ -30,6 +31,18 @@ mcpServer.tool(
     },
     async ({ from, to }) => {
         const result = await MTRService.getNextTrains(from, to);
+        return {
+            content: [{ type: "text", text: result }],
+        };
+    }
+);
+
+mcpServer.tool(
+    "hk_weather_current",
+    "Get current weather report from Hong Kong Observatory",
+    {},
+    async () => {
+        const result = await HKWeatherService.getCurrentWeather();
         return {
             content: [{ type: "text", text: result }],
         };
@@ -60,6 +73,37 @@ mcpServer.tool(
     },
     async ({ origin, destination }) => {
         const result = await AmapService.getWalkingDirection(origin, destination);
+        return {
+            content: [{ type: "text", text: result }],
+        };
+    }
+);
+
+mcpServer.tool(
+    "amap_driving_direction",
+    "Get driving directions between two locations using Amap",
+    {
+        origin: z.string().describe("Origin longitude,latitude"),
+        destination: z.string().describe("Destination longitude,latitude"),
+    },
+    async ({ origin, destination }) => {
+        const result = await AmapService.getDrivingDirection(origin, destination);
+        return {
+            content: [{ type: "text", text: result }],
+        };
+    }
+);
+
+mcpServer.tool(
+    "amap_transit_direction",
+    "Get public transit directions using Amap",
+    {
+        origin: z.string().describe("Origin longitude,latitude"),
+        destination: z.string().describe("Destination longitude,latitude"),
+        city: z.string().describe("City name or code"),
+    },
+    async ({ origin, destination, city }) => {
+        const result = await AmapService.getTransitDirection(origin, destination, city);
         return {
             content: [{ type: "text", text: result }],
         };

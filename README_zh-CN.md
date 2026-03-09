@@ -51,7 +51,10 @@ DragonMCP 是一个专为 AI Agent 设计的 Model Context Protocol (MCP) 服务
 | **大中华区** | **出行** | **港铁 (MTR)**        | `search_mtr_schedule`    | 实时列车时刻表 (港岛线/荃湾线) | ✅ 已上线 |
 |              |          | **高德地图**          | `amap_search_poi`        | 搜索 POI (餐厅、酒店等)        | ✅ 已上线 |
 |              |          | **高德地图**          | `amap_walking_direction` | 步行路径规划                   | ✅ 已上线 |
-|              |          | **滴滴出行**          | `book_taxi_didi`         | 预估价格并叫车                 | 🚧 模拟中 |
+|              |          | **高德地图**          | `amap_driving_direction` | 驾车路径规划 (最快)            | ✅ 已上线 |
+|              |          | **高德地图**          | `amap_transit_direction` | 公交路径规划 (综合)            | ✅ 已上线 |
+|              | **气象** | **香港天文台**        | `hk_weather_current`     | 香港实时天气报告               | ✅ 已上线 |
+|              | **出行** | **滴滴出行**          | `book_taxi_didi`         | 预估价格并叫车                 | 🚧 模拟中 |
 |              | **支付** | **微信支付**          | `wechat_pay_create`      | 创建支付订单                   | 🚧 模拟中 |
 |              |          | **支付宝**            | `alipay_pay_create`      | 创建支付订单                   | 🚧 模拟中 |
 |              | **生活** | **美团**              | `meituan_search_food`    | 搜索外卖美食                   | 🚧 模拟中 |
@@ -162,6 +165,23 @@ npm run dev
 
 服务器将在 `http://localhost:3000` 启动。
 SSE 端点: `http://localhost:3000/mcp/sse`
+
+### 使用 Docker 运行
+
+1.  构建并启动容器:
+    ```bash
+    docker-compose up -d --build
+    ```
+
+2.  查看日志:
+    ```bash
+    docker-compose logs -f
+    ```
+
+3.  停止服务器:
+    ```bash
+    docker-compose down
+    ```
 
 ### 连接到 Claude Desktop
 

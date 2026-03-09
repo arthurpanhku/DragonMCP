@@ -53,7 +53,10 @@ We are actively expanding our support for local services. Below are the currentl
 | **Greater China**  | **Travel**    | **MTR (HK)**         | `search_mtr_schedule`    | Real-time train schedule (Island/Tsuen Wan Line) | ✅ Live |
 |                    |               | **Amap (Gaode)**     | `amap_search_poi`        | Search for POIs (Restaurants, Hotels, etc.)      | ✅ Live |
 |                    |               | **Amap (Gaode)**     | `amap_walking_direction` | Walking route planning                           | ✅ Live |
-|                    |               | **Didi**             | `book_taxi_didi`         | Estimate price and book a ride                   | 🚧 Mock |
+|                    |               | **Amap (Gaode)**     | `amap_driving_direction` | Driving route planning (Fastest)                 | ✅ Live |
+|                    |               | **Amap (Gaode)**     | `amap_transit_direction` | Public transit route planning (Integrated)       | ✅ Live |
+|                    | **Weather**   | **HK Observatory**   | `hk_weather_current`     | Current weather report in Hong Kong              | ✅ Live |
+|                    | **Travel**    | **Didi**             | `book_taxi_didi`         | Estimate price and book a ride                   | 🚧 Mock |
 |                    | **Payment**   | **WeChat Pay**       | `wechat_pay_create`      | Create payment order                             | 🚧 Mock |
 |                    |               | **Alipay**           | `alipay_pay_create`      | Create payment order                             | 🚧 Mock |
 |                    | **Lifestyle** | **Meituan**          | `meituan_search_food`    | Search for food delivery                         | 🚧 Mock |
@@ -164,6 +167,23 @@ npm run dev
 
 The server will start at `http://localhost:3000`.
 SSE Endpoint: `http://localhost:3000/mcp/sse`
+
+### Running with Docker
+
+1.  Build and start the container:
+    ```bash
+    docker-compose up -d --build
+    ```
+
+2.  View logs:
+    ```bash
+    docker-compose logs -f
+    ```
+
+3.  Stop the server:
+    ```bash
+    docker-compose down
+    ```
 
 ### Connect to Claude Desktop
 

@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  dragon-mcp:
+    build: .
+    container_name: dragon-mcp
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - AMAP_API_KEY=${AMAP_API_KEY}
+    restart: unless-stopped
+    volumes:
+      - ./logs:/app/logs

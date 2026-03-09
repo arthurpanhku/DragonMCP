@@ -1,4 +1,4 @@
-import { MTRService } from '../../services/mtr/service';
+import { MTRService } from '../../services/hk/mtr/service';
 import axios from 'axios';
 import { jest } from '@jest/globals';
 
