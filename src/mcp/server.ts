@@ -11,12 +11,30 @@ import { TaobaoService } from "../services/cn/taobao/service.js";
 import { GrabService } from "../services/sg/grab/service.js";
 import { LinePayService } from "../services/jp/linepay/service.js";
 import { NaverMapService } from "../services/kr/naver/service.js";
+import { TestService } from "../services/system/test/service.js";
 
 // Create an MCP server
 export const mcpServer = new McpServer({
     name: "DragonMCP",
     version: "1.0.0",
 });
+
+mcpServer.tool(
+    "system_run_selftest",
+    "Run a self-test of all critical services to check system health",
+    {},
+    async () => {
+        const report = await TestService.runSelfTest();
+        const summary = `System Health Report (Tests: ${report.passedTests}/${report.totalTests} Passed)\n` +
+            report.results.map(r =>
+                `[${r.status}] ${r.service} - ${r.tool} (${r.duration}ms)\n   ${r.message}`
+            ).join('\n');
+
+        return {
+            content: [{ type: "text", text: summary }],
+        };
+    }
+);
 
 // -------------------------------------------------------------------------
 // Travel Tools (Greater China)
