@@ -1,7 +1,7 @@
 {
   "name": "dragon-mcp",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "description": "DragonMCP - A Model Context Protocol (MCP) server for Greater China local life services",
   "scripts": {
