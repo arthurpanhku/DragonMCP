@@ -84,15 +84,15 @@ graph TD
     B --> C[Service Router]
     
     subgraph "Greater China Services"
-        C --> D[Payment (WeChat/Alipay)]
-        C --> E[Travel (MTR/Amap/Didi)]
-        C --> F[Lifestyle (Meituan/Taobao)]
+        C --> D["Payment (WeChat/Alipay)"]
+        C --> E["Travel (MTR/Amap/Didi)"]
+        C --> F["Lifestyle (Meituan/Taobao)"]
     end
 
     subgraph "Asia Expansion Services"
-        C --> G[Travel (Grab/Naver)]
-        C --> H[Payment (LINE Pay/PayNow)]
-        C --> I[Lifestyle (Rakuten/Kakao)]
+        C --> G["Travel (Grab/Naver)"]
+        C --> H["Payment (LINE Pay/PayNow)"]
+        C --> I["Lifestyle (Rakuten/Kakao)"]
     end
     
     subgraph "External APIs"
