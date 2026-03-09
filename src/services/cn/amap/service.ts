@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { config } from '../../../config/index.js';
-import { AmapPOIResponse, AmapWalkingRouteResponse, AmapDrivingRouteResponse, AmapTransitRouteResponse } from './types.js';
+import { AmapPOIResponse, AmapWalkingRouteResponse, AmapDrivingRouteResponse, AmapTransitRouteResponse, AmapPOI } from './types.js';
 
 const AMAP_API_BASE = 'https://restapi.amap.com/v3';
 
@@ -10,7 +10,39 @@ export class AmapService {
     }
 
     /**
-     * Search for POIs (Points of Interest)
+     * Search for POIs and return raw data
+     */
+    static async searchPOIRaw(keywords: string, city?: string): Promise<AmapPOI[]> {
+        if (!this.apiKey) {
+            console.error('Error: AMAP_API_KEY is not configured in .env');
+            return [];
+        }
+
+        try {
+            const response = await axios.get<AmapPOIResponse>(`${AMAP_API_BASE}/place/text`, {
+                params: {
+                    key: this.apiKey,
+                    keywords,
+                    city,
+                    offset: 1, // We only need the top result for routing usually
+                    page: 1,
+                    extensions: 'base',
+                },
+            });
+
+            if (response.data.status !== '1' || response.data.count === '0') {
+                return [];
+            }
+
+            return response.data.pois;
+        } catch (error) {
+            console.error('Amap POI Raw Search Error:', error);
+            return [];
+        }
+    }
+
+    /**
+     * Search for POIs (Points of Interest) formatted string
      * @param keywords Keywords to search for (e.g. "restaurant", "hotel")
      * @param city City name or code (optional)
      */

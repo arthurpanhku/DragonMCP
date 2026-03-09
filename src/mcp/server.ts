@@ -12,6 +12,7 @@ import { GrabService } from "../services/sg/grab/service.js";
 import { LinePayService } from "../services/jp/linepay/service.js";
 import { NaverMapService } from "../services/kr/naver/service.js";
 import { TestService } from "../services/system/test/service.js";
+import { AsiaTransitService } from "../services/aggregator/asia_transit/service.js";
 
 // Create an MCP server
 export const mcpServer = new McpServer({
@@ -32,6 +33,23 @@ mcpServer.tool(
 
         return {
             content: [{ type: "text", text: summary }],
+        };
+    }
+);
+
+mcpServer.tool(
+    "search_transit_asia",
+    "Unified transit search for Asian regions (CN, HK, JP, KR, SG). Automatically routes to the best provider.",
+    {
+        from: z.string().describe("Origin (Address, Station Name, or Coordinates)"),
+        to: z.string().describe("Destination (Address, Station Name, or Coordinates)"),
+        region: z.enum(["CN", "HK", "JP", "KR", "SG"]).describe("Region code"),
+        city: z.string().optional().describe("City name (helpful for POI resolution in CN)"),
+    },
+    async ({ from, to, region, city }) => {
+        const result = await AsiaTransitService.searchRoute(from, to, region, city);
+        return {
+            content: [{ type: "text", text: result }],
         };
     }
 );
