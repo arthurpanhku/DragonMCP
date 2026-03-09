@@ -30,7 +30,7 @@ Es zielt darauf ab, das "letzte Meile"-Problem zwischen KI-Agenten und realen Di
 
 ## 🔥 Live-Demo: MTR Echtzeit-Fahrplan
 
-Wir haben das **MTR (Mass Transit Railway) Abfragetool** als unser erstes MVP. KI-Agenten können nun Echtzeit-Zugfahrpläne direkt von der offenen API der MTR abrufen.
+Wir haben das **MTR (Mass Transit Railway) Abfragetool** als unser erstes MVP implementiert. KI-Agenten können nun Echtzeit-Zugfahrpläne direkt von der offenen API der MTR abrufen.
 
 **Szenario**:
 > Benutzer: "Wann fährt der nächste Zug von Admiralty nach Central?"
