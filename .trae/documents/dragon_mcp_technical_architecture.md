@@ -9,47 +9,39 @@ graph TD
     C --> F[电商生活模块]
     C --> G[政务服务模块]
     
-    D --> H[微信支付API]
-    D --> I[支付宝API]
-    E --> J[高德地图API]
-    E --> K[百度地图API]
-    E --> L[滴滴出行API]
-    E --> M[美团打车API]
-    E --> N[港铁API]
-    E --> O[12306API]
-    F --> P[淘宝API]
-    F --> Q[京东API]
-    F --> R[拼多多API]
-    F --> S[闲鱼API]
-    F --> T[小红书API]
-    F --> U[美团外卖API]
-    F --> V[饿了么API]
-    G --> W[香港e-services]
-    G --> X[粤省事API]
+    subgraph "大中华区服务 (Greater China)"
+        D --> H[微信支付API]
+        D --> I[支付宝API]
+        E --> J[高德地图API]
+        E --> K[百度地图API]
+        E --> L[滴滴出行API]
+        E --> M[美团打车API]
+        E --> N[港铁API]
+        E --> O[12306API]
+        F --> P[淘宝API]
+        F --> Q[京东API]
+        F --> R[拼多多API]
+        F --> S[闲鱼API]
+        F --> T[小红书API]
+        F --> U[美团外卖API]
+        F --> V[饿了么API]
+        G --> W[香港e-services]
+        G --> X[粤省事API]
+    end
+
+    subgraph "亚洲扩展服务 (Asia Expansion)"
+        D --> AA[LINE Pay API]
+        D --> AB[PayNow API]
+        E --> AC[Grab API]
+        E --> AD[Naver Maps API]
+        E --> AE[Yahoo! Transit API]
+        F --> AF[Shopee/Lazada API]
+        F --> AG[Rakuten API]
+    end
     
     B --> Y[配置管理]
     B --> Z[密钥管理]
-    B --> AA[日志监控]
-    
-    subgraph "外部服务"
-        H
-        I
-        J
-        K
-        L
-        M
-        N
-        O
-        P
-        Q
-        R
-        S
-        T
-        U
-        V
-        W
-        X
-    end
+    B --> AH[日志监控]
     
     subgraph "DragonMCP核心"
         B
@@ -60,7 +52,7 @@ graph TD
         G
         Y
         Z
-        AA
+        AH
     end
 ```
 
@@ -391,9 +383,14 @@ NODE_ENV=production
 JWT_SECRET=your_jwt_secret
 ENCRYPTION_KEY=your_encryption_key
 
-# 外部API配置
+# 外部API配置 (大中华区)
 WECHAT_APP_ID=your_wechat_app_id
 WECHAT_APP_SECRET=your_wechat_app_secret
 ALIPAY_APP_ID=your_alipay_app_id
-ALIPAY_PRIVATE_KEY=your_alipay_private_key
+AMAP_API_KEY=your_amap_api_key
+
+# 外部API配置 (亚洲扩展)
+GRAB_API_KEY=your_grab_api_key
+LINE_PAY_CHANNEL_ID=your_line_channel_id
+NAVER_CLIENT_ID=your_naver_client_id
 ```

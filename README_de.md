@@ -30,7 +30,7 @@ Es zielt darauf ab, das "letzte Meile"-Problem zwischen KI-Agenten und realen Di
 
 ## 🔥 Live-Demo: MTR Echtzeit-Fahrplan
 
-Wir haben das **MTR (Mass Transit Railway) Abfragetool** als unser erstes MVP implementiert. KI-Agenten können nun Echtzeit-Zugfahrpläne direkt von der offenen API der MTR abrufen.
+Wir haben das **MTR (Mass Transit Railway) Abfragetool** als unser erstes MVP. KI-Agenten können nun Echtzeit-Zugfahrpläne direkt von der offenen API der MTR abrufen.
 
 **Szenario**:
 > Benutzer: "Wann fährt der nächste Zug von Admiralty nach Central?"
@@ -48,16 +48,19 @@ Wir haben das **MTR (Mass Transit Railway) Abfragetool** als unser erstes MVP im
 
 Wir erweitern aktiv unsere Unterstützung für lokale Dienste. Hier sind die derzeit integrierten Schnittstellen (einige sind Mocks/Platzhalter für die Entwicklung):
 
-| Kategorie     | Dienst           | Tool-Name                | Beschreibung                                 | Status |
-| :------------ | :--------------- | :----------------------- | :------------------------------------------- | :----- |
-| **Reisen**    | **MTR (HK)**     | `search_mtr_schedule`    | Echtzeit-Zugfahrplan (Island/Tsuen Wan Line) | ✅ Live |
-|               | **Amap (Gaode)** | `amap_search_poi`        | POI-Suche (Restaurants, Hotels, etc.)        | ✅ Live |
-|               | **Amap (Gaode)** | `amap_walking_direction` | Fußgängerroutenplanung                       | ✅ Live |
-|               | **DiDi**         | `book_taxi_didi`         | Preisschätzung und Fahrtbuchung              | 🚧 Mock |
-| **Zahlung**   | **WeChat Pay**   | `wechat_pay_create`      | Zahlungsauftrag erstellen                    | 🚧 Mock |
-|               | **Alipay**       | `alipay_pay_create`      | Zahlungsauftrag erstellen                    | 🚧 Mock |
-| **Lifestyle** | **Meituan**      | `meituan_search_food`    | Suche nach Essenslieferung                   | 🚧 Mock |
-| **Shopping**  | **Taobao**       | `taobao_search_product`  | Produktsuche                                 | 🚧 Mock |
+| Region                | Kategorie     | Dienst               | Tool-Name                | Beschreibung                                 | Status |
+| :-------------------- | :------------ | :------------------- | :----------------------- | :------------------------------------------- | :----- |
+| **Greater China**     | **Reisen**    | **MTR (HK)**         | `search_mtr_schedule`    | Echtzeit-Zugfahrplan (Island/Tsuen Wan Line) | ✅ Live |
+|                       |               | **Amap (Gaode)**     | `amap_search_poi`        | POI-Suche (Restaurants, Hotels, etc.)        | ✅ Live |
+|                       |               | **Amap (Gaode)**     | `amap_walking_direction` | Fußgängerroutenplanung                       | ✅ Live |
+|                       |               | **DiDi**             | `book_taxi_didi`         | Preisschätzung und Fahrtbuchung              | 🚧 Mock |
+|                       | **Zahlung**   | **WeChat Pay**       | `wechat_pay_create`      | Zahlungsauftrag erstellen                    | 🚧 Mock |
+|                       |               | **Alipay**           | `alipay_pay_create`      | Zahlungsauftrag erstellen                    | 🚧 Mock |
+|                       | **Lifestyle** | **Meituan**          | `meituan_search_food`    | Suche nach Essenslieferung                   | 🚧 Mock |
+|                       | **Shopping**  | **Taobao**           | `taobao_search_product`  | Produktsuche                                 | 🚧 Mock |
+| **Asien Erweiterung** | **Reisen**    | **Grab (SG/SEA)**    | `book_ride_grab`         | Fahrt schätzen und buchen                    | 🚧 Mock |
+|                       |               | **Naver Maps (KR)**  | `naver_map_search`       | Ortssuche in Korea                           | 🚧 Mock |
+|                       | **Zahlung**   | **LINE Pay (JP/TW)** | `line_pay_request`       | Zahlung anfordern                            | 🚧 Mock |
 
 ---
 
@@ -80,18 +83,23 @@ graph TD
     A[AI Agent Client] -->|MCP Protocol| B[DragonMCP Server]
     B --> C[Service Router]
     
-    subgraph "Service Modules"
-        C --> D[Payment Service]
-        C --> E[Travel Service]
-        C --> F[Lifestyle Service]
-        C --> G[Gov Service]
+    subgraph "Greater China Services"
+        C --> D[Payment (WeChat/Alipay)]
+        C --> E[Travel (MTR/Amap/Didi)]
+        C --> F[Lifestyle (Meituan/Taobao)]
+    end
+
+    subgraph "Asia Expansion Services"
+        C --> G[Travel (Grab/Naver)]
+        C --> H[Payment (LINE Pay/PayNow)]
+        C --> I[Lifestyle (Rakuten/Kakao)]
     end
     
     subgraph "External APIs"
-        D -.-> H[WeChat/Alipay]
-        E -.-> I[MTR/Amap/Didi]
-        F -.-> J[Meituan/Taobao]
-        G -.-> K[HK Gov/Mainland Gov]
+        D -.-> J[WeChat/Alipay API]
+        E -.-> K[MTR/Amap API]
+        G -.-> L[Grab/Naver API]
+        H -.-> M[LINE Pay API]
     end
 ```
 
@@ -109,11 +117,11 @@ Weitere Details finden Sie im [Technischen Architekturdokument](.trae/documents/
 - [ ] **Essenslieferung (Demo)**: Simulation des Bestellprozesses (Shop-Suche -> Menü -> Warenkorb).
 - [ ] **Grundkonfiguration**: Umgebungsvariablen & Projektstruktur.
 
-### Phase 2: Erweiterung
-- [ ] **Zahlungsintegration**: WeChat Pay / Alipay (Sandbox/QR-Code-Generierung).
-- [ ] **Mehr Transport**: Hochgeschwindigkeitszug (12306) Ticketprüfung, DiDi/Uber Schätzung.
-- [ ] **E-Commerce**: Produktsuchaggregation (Taobao/JD).
-- [ ] **Multi-Regionen-Support**: Kontextwechsel zwischen Festlandchina / HK / SG.
+### Phase 2: Asien Erweiterung (Neu!)
+- [x] **Struktur-Setup**: Service-Verzeichnisse für Singapur (Grab), Japan (LINE), Korea (Naver).
+- [x] **Initiale Mocks**: Grab Fahrtbuchung, LINE Pay Anfrage, Naver Maps Suche.
+- [ ] **Echte API-Integration**: Ersetzen von Mocks durch echte APIs (Grab Developer, LINE Pay API).
+- [ ] **Mehr Dienste**: Kakao Pay (KR), Yahoo! Transit (JP), EZ-Link (SG).
 
 ### Phase 3: Ökosystem
 - [ ] **Plugin-System**: Ermöglicht der Community, einzelne Diensttools beizutragen.

@@ -46,16 +46,19 @@ DragonMCP 是一个专为 AI Agent 设计的 Model Context Protocol (MCP) 服务
 
 我们正在积极拓展本地生活服务的支持。以下是目前已集成的接口（部分为开发用的 Mock/占位符）：
 
-| 分类     | 服务商         | 工具名称                 | 描述                           | 状态     |
-| :------- | :------------- | :----------------------- | :----------------------------- | :------- |
-| **出行** | **港铁 (MTR)** | `search_mtr_schedule`    | 实时列车时刻表 (港岛线/荃湾线) | ✅ 已上线 |
-|          | **高德地图**   | `amap_search_poi`        | 搜索 POI (餐厅、酒店等)        | ✅ 已上线 |
-|          | **高德地图**   | `amap_walking_direction` | 步行路径规划                   | ✅ 已上线 |
-|          | **滴滴出行**   | `book_taxi_didi`         | 预估价格并叫车                 | 🚧 模拟中 |
-| **支付** | **微信支付**   | `wechat_pay_create`      | 创建支付订单                   | 🚧 模拟中 |
-|          | **支付宝**     | `alipay_pay_create`      | 创建支付订单                   | 🚧 模拟中 |
-| **生活** | **美团**       | `meituan_search_food`    | 搜索外卖美食                   | 🚧 模拟中 |
-| **购物** | **淘宝**       | `taobao_search_product`  | 搜索商品                       | 🚧 模拟中 |
+| 区域         | 分类     | 服务商                | 工具名称                 | 描述                           | 状态     |
+| :----------- | :------- | :-------------------- | :----------------------- | :----------------------------- | :------- |
+| **大中华区** | **出行** | **港铁 (MTR)**        | `search_mtr_schedule`    | 实时列车时刻表 (港岛线/荃湾线) | ✅ 已上线 |
+|              |          | **高德地图**          | `amap_search_poi`        | 搜索 POI (餐厅、酒店等)        | ✅ 已上线 |
+|              |          | **高德地图**          | `amap_walking_direction` | 步行路径规划                   | ✅ 已上线 |
+|              |          | **滴滴出行**          | `book_taxi_didi`         | 预估价格并叫车                 | 🚧 模拟中 |
+|              | **支付** | **微信支付**          | `wechat_pay_create`      | 创建支付订单                   | 🚧 模拟中 |
+|              |          | **支付宝**            | `alipay_pay_create`      | 创建支付订单                   | 🚧 模拟中 |
+|              | **生活** | **美团**              | `meituan_search_food`    | 搜索外卖美食                   | 🚧 模拟中 |
+|              | **购物** | **淘宝**              | `taobao_search_product`  | 搜索商品                       | 🚧 模拟中 |
+| **亚洲扩展** | **出行** | **Grab (新马泰)**     | `book_ride_grab`         | 预估价格并叫车                 | 🚧 模拟中 |
+|              |          | **Naver Maps (韩国)** | `naver_map_search`       | 搜索韩国地点                   | 🚧 模拟中 |
+|              | **支付** | **LINE Pay (日台泰)** | `line_pay_request`       | 发起支付请求                   | 🚧 模拟中 |
 
 ---
 
@@ -78,18 +81,23 @@ graph TD
     A[AI Agent Client] -->|MCP Protocol| B[DragonMCP Server]
     B --> C[Service Router]
     
-    subgraph "Service Modules"
-        C --> D[Payment Service]
-        C --> E[Travel Service]
-        C --> F[Lifestyle Service]
-        C --> G[Gov Service]
+    subgraph "Greater China Services"
+        C --> D[Payment (WeChat/Alipay)]
+        C --> E[Travel (MTR/Amap/Didi)]
+        C --> F[Lifestyle (Meituan/Taobao)]
+    end
+
+    subgraph "Asia Expansion Services"
+        C --> G[Travel (Grab/Naver)]
+        C --> H[Payment (LINE Pay/PayNow)]
+        C --> I[Lifestyle (Rakuten/Kakao)]
     end
     
     subgraph "External APIs"
-        D -.-> H[WeChat/Alipay]
-        E -.-> I[MTR/Amap/Didi]
-        F -.-> J[Meituan/Taobao]
-        G -.-> K[HK Gov/Mainland Gov]
+        D -.-> J[WeChat/Alipay API]
+        E -.-> K[MTR/Amap API]
+        G -.-> L[Grab/Naver API]
+        H -.-> M[LINE Pay API]
     end
 ```
 
@@ -107,11 +115,11 @@ graph TD
 - [ ] **外卖 (Demo)**: 模拟点单流程（搜店 -> 选品 -> 购物车）。
 - [ ] **基础配置**: 环境变量与项目结构。
 
-### 第二阶段：拓展
-- [ ] **支付集成**: 微信支付 / 支付宝（沙箱/二维码生成）。
-- [ ] **更多出行**: 高铁 (12306) 余票查询、滴滴/Uber 估价。
-- [ ] **电商**: 商品搜索聚合（淘宝/京东）。
-- [ ] **多地区支持**: 上下文切换（内地 / 香港 / 新加坡）。
+### 第二阶段：亚洲扩展（新增！）
+- [x] **结构搭建**: 新加坡 (Grab)、日本 (LINE)、韩国 (Naver) 的服务目录。
+- [x] **初步模拟**: Grab 叫车、LINE Pay 支付、Naver 地图搜索的 Mock 实现。
+- [ ] **真实集成**: 用真实 API 替换 Mock（Grab Developer, LINE Pay API）。
+- [ ] **更多服务**: Kakao Pay (韩国)、Yahoo! 换乘案内 (日本)、EZ-Link (新加坡)。
 
 ### 第三阶段：生态
 - [ ] **插件系统**: 允许社区贡献独立服务工具。

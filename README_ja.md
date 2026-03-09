@@ -48,16 +48,19 @@ AIエージェントと現実世界のサービス間の「ラストワンマイ
 
 ローカルサービスのサポートを積極的に拡大しています。以下は現在統合されているインターフェースです（一部は開発用のモック/プレースホルダーです）：
 
-| カテゴリ           | サービス           | ツール名                 | 説明                                   | ステータス |
-| :----------------- | :----------------- | :----------------------- | :------------------------------------- | :--------- |
-| **交通**           | **MTR (香港)**     | `search_mtr_schedule`    | リアルタイム列車時刻表 (港島線/荃湾線) | ✅ 稼働中   |
-|                    | **Amap (高徳)**    | `amap_search_poi`        | POI検索 (レストラン、ホテルなど)       | ✅ 稼働中   |
-|                    | **Amap (高徳)**    | `amap_walking_direction` | 徒歩ルート検索                         | ✅ 稼働中   |
-|                    | **DiDi**           | `book_taxi_didi`         | 価格見積もりと配車予約                 | 🚧 モック   |
-| **決済**           | **WeChat Pay**     | `wechat_pay_create`      | 支払い注文の作成                       | 🚧 モック   |
-|                    | **Alipay**         | `alipay_pay_create`      | 支払い注文の作成                       | 🚧 モック   |
-| **ライフスタイル** | **美団 (Meituan)** | `meituan_search_food`    | フードデリバリー検索                   | 🚧 モック   |
-| **ショッピング**   | **淘宝 (Taobao)**  | `taobao_search_product`  | 商品検索                               | 🚧 モック   |
+| 地域           | カテゴリ           | サービス              | ツール名                 | 説明                                   | ステータス |
+| :------------- | :----------------- | :-------------------- | :----------------------- | :------------------------------------- | :--------- |
+| **大中華圏**   | **交通**           | **MTR (香港)**        | `search_mtr_schedule`    | リアルタイム列車時刻表 (港島線/荃湾線) | ✅ 稼働中   |
+|                |                    | **Amap (高徳)**       | `amap_search_poi`        | POI検索 (レストラン、ホテルなど)       | ✅ 稼働中   |
+|                |                    | **Amap (高徳)**       | `amap_walking_direction` | 徒歩ルート検索                         | ✅ 稼働中   |
+|                |                    | **DiDi**              | `book_taxi_didi`         | 価格見積もりと配車予約                 | 🚧 モック   |
+|                | **決済**           | **WeChat Pay**        | `wechat_pay_create`      | 支払い注文の作成                       | 🚧 モック   |
+|                |                    | **Alipay**            | `alipay_pay_create`      | 支払い注文の作成                       | 🚧 モック   |
+|                | **ライフスタイル** | **美団 (Meituan)**    | `meituan_search_food`    | フードデリバリー検索                   | 🚧 モック   |
+|                | **ショッピング**   | **淘宝 (Taobao)**     | `taobao_search_product`  | 商品検索                               | 🚧 モック   |
+| **アジア拡張** | **交通**           | **Grab (SG/SEA)**     | `book_ride_grab`         | 配車予約と見積もり                     | 🚧 モック   |
+|                |                    | **Naver Maps (韓国)** | `naver_map_search`       | 韓国の場所検索                         | 🚧 モック   |
+|                | **決済**           | **LINE Pay (日台泰)** | `line_pay_request`       | 支払いリクエスト                       | 🚧 モック   |
 
 ---
 
@@ -80,18 +83,23 @@ graph TD
     A[AI Agent Client] -->|MCP Protocol| B[DragonMCP Server]
     B --> C[Service Router]
     
-    subgraph "Service Modules"
-        C --> D[Payment Service]
-        C --> E[Travel Service]
-        C --> F[Lifestyle Service]
-        C --> G[Gov Service]
+    subgraph "Greater China Services"
+        C --> D[Payment (WeChat/Alipay)]
+        C --> E[Travel (MTR/Amap/Didi)]
+        C --> F[Lifestyle (Meituan/Taobao)]
+    end
+
+    subgraph "Asia Expansion Services"
+        C --> G[Travel (Grab/Naver)]
+        C --> H[Payment (LINE Pay/PayNow)]
+        C --> I[Lifestyle (Rakuten/Kakao)]
     end
     
     subgraph "External APIs"
-        D -.-> H[WeChat/Alipay]
-        E -.-> I[MTR/Amap/Didi]
-        F -.-> J[Meituan/Taobao]
-        G -.-> K[HK Gov/Mainland Gov]
+        D -.-> J[WeChat/Alipay API]
+        E -.-> K[MTR/Amap API]
+        G -.-> L[Grab/Naver API]
+        H -.-> M[LINE Pay API]
     end
 ```
 
@@ -109,11 +117,11 @@ graph TD
 - [ ] **フードデリバリー (Demo)**: 注文プロセスのシミュレーション（店舗検索 -> メニュー選択 -> カート追加）。
 - [ ] **基本設定**: 環境変数とプロジェクト構造。
 
-### フェーズ2：拡張
-- [ ] **決済統合**: WeChat Pay / Alipay（サンドボックス/QRコード生成）。
-- [ ] **交通機関の追加**: 高速鉄道（12306）のチケット確認、DiDi/Uberの見積もり。
-- [ ] **Eコマース**: 商品検索の集約（Taobao/JD）。
-- [ ] **多地域サポート**: 中国本土 / 香港 / シンガポール間のコンテキスト切り替え。
+### フェーズ2：アジア拡張（新規！）
+- [x] **構造セットアップ**: シンガポール (Grab)、日本 (LINE)、韓国 (Naver) のサービスディレクトリ。
+- [x] **初期モック**: Grab配車、LINE Pay支払い、Naverマップ検索。
+- [ ] **リアルAPI統合**: モックをリアルAPIに置き換える (Grab Developer, LINE Pay API)。
+- [ ] **追加サービス**: Kakao Pay (韓国)、Yahoo! 乗換案内 (日本)、EZ-Link (シンガポール)。
 
 ### フェーズ3：エコシステム
 - [ ] **プラグインシステム**: コミュニティが個別のサービスツールを提供できるようにする。

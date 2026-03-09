@@ -48,16 +48,19 @@ Nous avons implémenté l'**Outil de Requête MTR (Mass Transit Railway)** comme
 
 Nous étendons activement notre support pour les services locaux. Voici les interfaces actuellement intégrées (certaines sont des mocks/placeholders pour le développement) :
 
-| Catégorie     | Service          | Nom de l'outil           | Description                                              | Statut |
-| :------------ | :--------------- | :----------------------- | :------------------------------------------------------- | :----- |
-| **Voyage**    | **MTR (HK)**     | `search_mtr_schedule`    | Horaires de train en temps réel (Ligne Island/Tsuen Wan) | ✅ Live |
-|               | **Amap (Gaode)** | `amap_search_poi`        | Recherche de POI (Restaurants, Hôtels, etc.)             | ✅ Live |
-|               | **Amap (Gaode)** | `amap_walking_direction` | Planification d'itinéraire à pied                        | ✅ Live |
-|               | **DiDi**         | `book_taxi_didi`         | Estimation du prix et réservation de course              | 🚧 Mock |
-| **Paiement**  | **WeChat Pay**   | `wechat_pay_create`      | Créer une commande de paiement                           | 🚧 Mock |
-|               | **Alipay**       | `alipay_pay_create`      | Créer une commande de paiement                           | 🚧 Mock |
-| **Lifestyle** | **Meituan**      | `meituan_search_food`    | Recherche de livraison de nourriture                     | 🚧 Mock |
-| **Shopping**  | **Taobao**       | `taobao_search_product`  | Recherche de produits                                    | 🚧 Mock |
+| Région             | Catégorie     | Service              | Nom de l'outil           | Description                                              | Statut |
+| :----------------- | :------------ | :------------------- | :----------------------- | :------------------------------------------------------- | :----- |
+| **Grande Chine**   | **Voyage**    | **MTR (HK)**         | `search_mtr_schedule`    | Horaires de train en temps réel (Ligne Island/Tsuen Wan) | ✅ Live |
+|                    |               | **Amap (Gaode)**     | `amap_search_poi`        | Recherche de POI (Restaurants, Hôtels, etc.)             | ✅ Live |
+|                    |               | **Amap (Gaode)**     | `amap_walking_direction` | Planification d'itinéraire à pied                        | ✅ Live |
+|                    |               | **DiDi**             | `book_taxi_didi`         | Estimation du prix et réservation de course              | 🚧 Mock |
+|                    | **Paiement**  | **WeChat Pay**       | `wechat_pay_create`      | Créer une commande de paiement                           | 🚧 Mock |
+|                    |               | **Alipay**           | `alipay_pay_create`      | Créer une commande de paiement                           | 🚧 Mock |
+|                    | **Lifestyle** | **Meituan**          | `meituan_search_food`    | Recherche de livraison de nourriture                     | 🚧 Mock |
+|                    | **Shopping**  | **Taobao**           | `taobao_search_product`  | Recherche de produits                                    | 🚧 Mock |
+| **Extension Asie** | **Voyage**    | **Grab (SG/SEA)**    | `book_ride_grab`         | Estimation et réservation de course                      | 🚧 Mock |
+|                    |               | **Naver Maps (KR)**  | `naver_map_search`       | Recherche de lieux en Corée                              | 🚧 Mock |
+|                    | **Paiement**  | **LINE Pay (JP/TW)** | `line_pay_request`       | Demander un paiement                                     | 🚧 Mock |
 
 ---
 
@@ -80,18 +83,23 @@ graph TD
     A[AI Agent Client] -->|MCP Protocol| B[DragonMCP Server]
     B --> C[Service Router]
     
-    subgraph "Service Modules"
-        C --> D[Payment Service]
-        C --> E[Travel Service]
-        C --> F[Lifestyle Service]
-        C --> G[Gov Service]
+    subgraph "Greater China Services"
+        C --> D[Payment (WeChat/Alipay)]
+        C --> E[Travel (MTR/Amap/Didi)]
+        C --> F[Lifestyle (Meituan/Taobao)]
+    end
+
+    subgraph "Asia Expansion Services"
+        C --> G[Travel (Grab/Naver)]
+        C --> H[Payment (LINE Pay/PayNow)]
+        C --> I[Lifestyle (Rakuten/Kakao)]
     end
     
     subgraph "External APIs"
-        D -.-> H[WeChat/Alipay]
-        E -.-> I[MTR/Amap/Didi]
-        F -.-> J[Meituan/Taobao]
-        G -.-> K[HK Gov/Mainland Gov]
+        D -.-> J[WeChat/Alipay API]
+        E -.-> K[MTR/Amap API]
+        G -.-> L[Grab/Naver API]
+        H -.-> M[LINE Pay API]
     end
 ```
 
@@ -109,11 +117,11 @@ Pour plus de détails, veuillez vous référer au [Document d'Architecture Techn
 - [ ] **Livraison de Nourriture (Démo)**: Simuler le processus de commande (Recherche Boutique -> Menu -> Panier).
 - [ ] **Configuration de Base**: Variables d'environnement & structure du projet.
 
-### Phase 2 : Expansion
-- [ ] **Intégration de Paiement**: WeChat Pay / Alipay (Sandbox/Génération de QR Code).
-- [ ] **Plus de Transports**: Vérification de billets de train à grande vitesse (12306), estimation Didi/Uber.
-- [ ] **E-commerce**: Agrégation de recherche de produits (Taobao/JD).
-- [ ] **Support Multi-région**: Changer de contexte entre Chine continentale / HK / SG.
+### Phase 2 : Extension Asie (Nouveau !)
+- [x] **Mise en Place Structure**: Répertoires de service pour Singapour (Grab), Japon (LINE), Corée (Naver).
+- [x] **Mocks Initiaux**: Réservation Grab, demande LINE Pay, recherche Naver Map.
+- [ ] **Intégration API Réelle**: Remplacer les mocks par de vraies API (Grab Developer, LINE Pay API).
+- [ ] **Plus de Services**: Kakao Pay (KR), Yahoo! Transit (JP), EZ-Link (SG).
 
 ### Phase 3 : Écosystème
 - [ ] **Système de Plugins**: Permettre à la communauté de contribuer des outils de service individuels.
