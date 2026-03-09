@@ -44,6 +44,23 @@ We have implemented the **MTR (Mass Transit Railway) Query Tool** as our first M
 
 ---
 
+## 🛠️ Supported Services (Beta)
+
+We are actively expanding our support for local services. Below are the currently integrated interfaces (some are mocks/placeholders for development):
+
+| Category      | Service          | Tool Name                | Description                                      | Status |
+| :------------ | :--------------- | :----------------------- | :----------------------------------------------- | :----- |
+| **Travel**    | **MTR (HK)**     | `search_mtr_schedule`    | Real-time train schedule (Island/Tsuen Wan Line) | ✅ Live |
+|               | **Amap (Gaode)** | `amap_search_poi`        | Search for POIs (Restaurants, Hotels, etc.)      | ✅ Live |
+|               | **Amap (Gaode)** | `amap_walking_direction` | Walking route planning                           | ✅ Live |
+|               | **Didi**         | `book_taxi_didi`         | Estimate price and book a ride                   | 🚧 Mock |
+| **Payment**   | **WeChat Pay**   | `wechat_pay_create`      | Create payment order                             | 🚧 Mock |
+|               | **Alipay**       | `alipay_pay_create`      | Create payment order                             | 🚧 Mock |
+| **Lifestyle** | **Meituan**      | `meituan_search_food`    | Search for food delivery                         | 🚧 Mock |
+| **Shopping**  | **Taobao**       | `taobao_search_product`  | Search for products                              | 🚧 Mock |
+
+---
+
 ## 🏗️ Architecture
 
 DragonMCP acts as a middleware between AI Agents and various local service APIs.
@@ -77,6 +94,8 @@ For more details, please refer to the [Technical Architecture Document](.trae/do
 ### Phase 1: MVP (Current)
 - [x] **Core Framework**: Express + MCP SDK + TypeScript setup.
 - [x] **Travel (MTR)**: Real-time schedule query for Island Line & Tsuen Wan Line.
+- [x] **Travel (Amap)**: POI search and walking directions.
+- [x] **Service Mocks**: Basic structure for WeChat/Alipay/Didi/Meituan/Taobao.
 - [ ] **Food Delivery (Demo)**: Simulate ordering process (Search Shop -> Menu -> Cart).
 - [ ] **Basic Config**: Environment variables & project structure.
 
@@ -114,7 +133,7 @@ For more details, please refer to the [Technical Architecture Document](.trae/do
 3.  Configure environment variables:
     ```bash
     cp .env.example .env
-    # Edit .env if necessary (MTR API requires no key currently)
+    # Edit .env (AMAP_API_KEY required for map services)
     ```
 
 ### Running the Server
@@ -167,7 +186,7 @@ We welcome all contributions! Whether you are a developer, designer, or product 
 ### We need help with:
 1.  **Playwright Scripts**: Simulating food delivery apps (Meituan/Ele.me) web flows.
 2.  **More MTR Lines**: Adding station data for East Rail Line, Tuen Ma Line, etc.
-3.  **Docs**: Translating docs to other languages.
+3.  **Real API Integration**: Replacing mocks with real APIs for WeChat/Alipay/Didi.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) (Coming Soon) for details.
 

@@ -44,6 +44,23 @@ Wir haben das **MTR (Mass Transit Railway) Abfragetool** als unser erstes MVP im
 
 ---
 
+## 🛠️ Unterstützte Dienste (Beta)
+
+Wir erweitern aktiv unsere Unterstützung für lokale Dienste. Hier sind die derzeit integrierten Schnittstellen (einige sind Mocks/Platzhalter für die Entwicklung):
+
+| Kategorie     | Dienst           | Tool-Name                | Beschreibung                                 | Status |
+| :------------ | :--------------- | :----------------------- | :------------------------------------------- | :----- |
+| **Reisen**    | **MTR (HK)**     | `search_mtr_schedule`    | Echtzeit-Zugfahrplan (Island/Tsuen Wan Line) | ✅ Live |
+|               | **Amap (Gaode)** | `amap_search_poi`        | POI-Suche (Restaurants, Hotels, etc.)        | ✅ Live |
+|               | **Amap (Gaode)** | `amap_walking_direction` | Fußgängerroutenplanung                       | ✅ Live |
+|               | **DiDi**         | `book_taxi_didi`         | Preisschätzung und Fahrtbuchung              | 🚧 Mock |
+| **Zahlung**   | **WeChat Pay**   | `wechat_pay_create`      | Zahlungsauftrag erstellen                    | 🚧 Mock |
+|               | **Alipay**       | `alipay_pay_create`      | Zahlungsauftrag erstellen                    | 🚧 Mock |
+| **Lifestyle** | **Meituan**      | `meituan_search_food`    | Suche nach Essenslieferung                   | 🚧 Mock |
+| **Shopping**  | **Taobao**       | `taobao_search_product`  | Produktsuche                                 | 🚧 Mock |
+
+---
+
 ## 🏗️ Architektur
 
 DragonMCP fungiert als Middleware zwischen KI-Agenten und verschiedenen lokalen Dienst-APIs.
@@ -77,6 +94,8 @@ Weitere Details finden Sie im [Technischen Architekturdokument](.trae/documents/
 ### Phase 1: MVP (Aktuell)
 - [x] **Kernframework**: Express + MCP SDK + TypeScript Setup.
 - [x] **Reisen (MTR)**: Echtzeit-Fahrplanabfrage für Island Line & Tsuen Wan Line.
+- [x] **Reisen (Amap)**: POI-Suche und Fußgängernavigation.
+- [x] **Service Mocks**: Grundstruktur für WeChat/Alipay/DiDi/Meituan/Taobao.
 - [ ] **Essenslieferung (Demo)**: Simulation des Bestellprozesses (Shop-Suche -> Menü -> Warenkorb).
 - [ ] **Grundkonfiguration**: Umgebungsvariablen & Projektstruktur.
 
@@ -114,7 +133,7 @@ Weitere Details finden Sie im [Technischen Architekturdokument](.trae/documents/
 3.  Umgebungsvariablen konfigurieren:
     ```bash
     cp .env.example .env
-    # Bearbeiten Sie .env falls nötig (MTR API benötigt derzeit keinen Schlüssel)
+    # Bearbeiten Sie .env (AMAP_API_KEY für Kartendienste erforderlich)
     ```
 
 ### Server starten
@@ -167,7 +186,7 @@ Wir begrüßen alle Beiträge! Egal ob Entwickler, Designer oder Produktvordenke
 ### Wir brauchen Hilfe bei:
 1.  **Playwright Skripte**: Simulation von Web-Flows für Essensliefer-Apps (Meituan/Ele.me).
 2.  **Mehr MTR-Linien**: Hinzufügen von Stationsdaten für East Rail Line, Tuen Ma Line, usw.
-3.  **Doks**: Übersetzung der Dokumentation in andere Sprachen.
+3.  **Echte API-Integration**: Ersetzen von Mocks durch echte APIs für WeChat/Alipay/DiDi.
 
 Siehe [CONTRIBUTING.md](CONTRIBUTING.md) (Demnächst) für Details.
 

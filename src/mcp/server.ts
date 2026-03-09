@@ -1,8 +1,12 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import { z } from "zod";
-import { config } from "../config/index.js";
 import { MTRService } from "../services/mtr/service.js";
+import { AmapService } from "../services/travel/amap/service.js";
+import { WeChatPayService } from "../services/payment/wechat/service.js";
+import { AlipayService } from "../services/payment/alipay/service.js";
+import { DidiService } from "../services/travel/didi/service.js";
+import { MeituanService } from "../services/lifestyle/meituan/service.js";
+import { TaobaoService } from "../services/ecommerce/taobao/service.js";
 
 // Create an MCP server
 export const mcpServer = new McpServer({
@@ -29,75 +33,134 @@ mcpServer.tool(
     }
 );
 
+mcpServer.tool(
+    "amap_search_poi",
+    "Search for Places of Interest (POI) using Amap (Gaode Map)",
+    {
+        keywords: z.string().describe("Keywords to search for (e.g. 'restaurant', 'hotel')"),
+        city: z.string().optional().describe("City name or code (optional)"),
+    },
+    async ({ keywords, city }) => {
+        const result = await AmapService.searchPOI(keywords, city);
+        return {
+            content: [{ type: "text", text: result }],
+        };
+    }
+);
+
+mcpServer.tool(
+    "amap_walking_direction",
+    "Get walking directions between two locations using Amap",
+    {
+        origin: z.string().describe("Origin longitude,latitude (e.g. '116.481028,39.989643')"),
+        destination: z.string().describe("Destination longitude,latitude"),
+    },
+    async ({ origin, destination }) => {
+        const result = await AmapService.getWalkingDirection(origin, destination);
+        return {
+            content: [{ type: "text", text: result }],
+        };
+    }
+);
+
+mcpServer.tool(
+    "book_taxi_didi",
+    "Estimate and book a taxi via Didi (Mock)",
+    {
+        originLat: z.number().describe("Origin Latitude"),
+        originLng: z.number().describe("Origin Longitude"),
+        destLat: z.number().describe("Destination Latitude"),
+        destLng: z.number().describe("Destination Longitude"),
+    },
+    async ({ originLat, originLng, destLat, destLng }) => {
+        const request = {
+            origin: { lat: originLat, lng: originLng },
+            destination: { lat: destLat, lng: destLng }
+        };
+        const estimate = await DidiService.estimatePrice(request);
+        const orderId = await DidiService.requestRide(request);
+
+        return {
+            content: [{ type: "text", text: `Didi Ride Booked!\nOrder ID: ${orderId}\nEstimated Price: ${estimate.price} CNY\nDuration: ${estimate.duration} mins` }],
+        };
+    }
+);
+
 // -------------------------------------------------------------------------
-// Payment Tools (Mock)
+// Payment Tools
 // -------------------------------------------------------------------------
 
 mcpServer.tool(
-    "wechat_pay",
-    "Initiate a WeChat Pay transaction",
+    "wechat_pay_create",
+    "Initiate a WeChat Pay transaction (Mock)",
     {
-        amount: z.number().describe("Amount to pay in CNY"),
+        amount: z.number().describe("Amount to pay in CNY (converted to cents internally)"),
         description: z.string().describe("Description of the payment"),
-        type: z.enum(["mini_program", "utility"]).describe("Type of payment"),
+        outTradeNo: z.string().optional().describe("Unique trade number"),
     },
-    async ({ amount, description, type }) => {
-        // Placeholder implementation
-        console.log(`[WeChat Pay] Amount: ${amount}, Desc: ${description}, Type: ${type}`);
+    async ({ amount, description, outTradeNo }) => {
+        const result = await WeChatPayService.createOrder({
+            totalFee: Math.round(amount * 100),
+            body: description,
+            outTradeNo: outTradeNo || `order_${Date.now()}`,
+        });
         return {
-            content: [{ type: "text", text: `WeChat Pay request initiated for ${amount} CNY (${type})` }],
+            content: [{ type: "text", text: `WeChat Pay Order Created.\nCode: ${result.return_code}\nMsg: ${result.return_msg}` }],
         };
     }
 );
 
 mcpServer.tool(
-    "alipay_pay",
-    "Initiate an Alipay transaction",
+    "alipay_pay_create",
+    "Initiate an Alipay transaction (Mock)",
     {
-        amount: z.number().describe("Amount to pay in CNY"),
-        description: z.string().describe("Description of the payment"),
-        type: z.enum(["mini_program", "utility"]).describe("Type of payment"),
+        amount: z.string().describe("Amount to pay in CNY"),
+        subject: z.string().describe("Order subject/title"),
+        outTradeNo: z.string().optional().describe("Unique trade number"),
     },
-    async ({ amount, description, type }) => {
-        // Placeholder implementation
-        console.log(`[Alipay] Amount: ${amount}, Desc: ${description}, Type: ${type}`);
+    async ({ amount, subject, outTradeNo }) => {
+        const result = await AlipayService.createOrder({
+            totalAmount: amount,
+            subject: subject,
+            outTradeNo: outTradeNo,
+        });
         return {
-            content: [{ type: "text", text: `Alipay request initiated for ${amount} CNY (${type})` }],
+            content: [{ type: "text", text: `Alipay Order Created.\nTrade No: ${result.outTradeNo}\nQR Code: ${result.qrCode}` }],
         };
     }
 );
 
 // -------------------------------------------------------------------------
-// Other Tools (Mock)
+// Lifestyle & E-commerce Tools
 // -------------------------------------------------------------------------
 
 mcpServer.tool(
-    "book_taxi",
-    "Book a taxi via Didi or Meituan",
+    "meituan_search_food",
+    "Search for food/restaurants on Meituan (Mock)",
     {
-        origin: z.string().describe("Pickup location"),
-        destination: z.string().describe("Dropoff location"),
-        provider: z.enum(["didi", "meituan"]).describe("Service provider"),
+        keyword: z.string().describe("Food or restaurant name"),
+        location: z.string().describe("Current location or address"),
     },
-    async ({ origin, destination, provider }) => {
-        console.log(`[Taxi] ${provider}: ${origin} -> ${destination}`);
+    async ({ keyword, location }) => {
+        const results = await MeituanService.searchRestaurants(keyword, location);
+        const text = results.map(r => `- ${r.name} (Rating: ${r.rating}, Min: ${r.minOrder})`).join('\n');
         return {
-            content: [{ type: "text", text: `Taxi booked from ${origin} to ${destination} via ${provider}` }],
+            content: [{ type: "text", text: `Meituan Results for "${keyword}":\n${text}` }],
         };
     }
 );
 
 mcpServer.tool(
-    "search_product",
-    "Search for products on e-commerce platforms",
+    "taobao_search_product",
+    "Search for products on Taobao (Mock)",
     {
         keyword: z.string().describe("Product keyword"),
-        platform: z.enum(["taobao", "jd", "pinduoduo", "xianyu"]).describe("Platform to search"),
     },
-    async ({ keyword, platform }) => {
-        console.log(`[Shopping] ${platform}: ${keyword}`);
+    async ({ keyword }) => {
+        const results = await TaobaoService.searchProducts(keyword);
+        const text = results.map(p => `- ${p.title} (Price: ¥${p.price}, Sales: ${p.sales})`).join('\n');
         return {
-            content: [{ type: "text", text: `Found products for "${keyword}" on ${platform}` }],
+            content: [{ type: "text", text: `Taobao Results for "${keyword}":\n${text}` }],
         };
     }
 );

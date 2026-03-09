@@ -44,6 +44,23 @@ Nous avons implémenté l'**Outil de Requête MTR (Mass Transit Railway)** comme
 
 ---
 
+## 🛠️ Services Supportés (Bêta)
+
+Nous étendons activement notre support pour les services locaux. Voici les interfaces actuellement intégrées (certaines sont des mocks/placeholders pour le développement) :
+
+| Catégorie     | Service          | Nom de l'outil           | Description                                              | Statut |
+| :------------ | :--------------- | :----------------------- | :------------------------------------------------------- | :----- |
+| **Voyage**    | **MTR (HK)**     | `search_mtr_schedule`    | Horaires de train en temps réel (Ligne Island/Tsuen Wan) | ✅ Live |
+|               | **Amap (Gaode)** | `amap_search_poi`        | Recherche de POI (Restaurants, Hôtels, etc.)             | ✅ Live |
+|               | **Amap (Gaode)** | `amap_walking_direction` | Planification d'itinéraire à pied                        | ✅ Live |
+|               | **DiDi**         | `book_taxi_didi`         | Estimation du prix et réservation de course              | 🚧 Mock |
+| **Paiement**  | **WeChat Pay**   | `wechat_pay_create`      | Créer une commande de paiement                           | 🚧 Mock |
+|               | **Alipay**       | `alipay_pay_create`      | Créer une commande de paiement                           | 🚧 Mock |
+| **Lifestyle** | **Meituan**      | `meituan_search_food`    | Recherche de livraison de nourriture                     | 🚧 Mock |
+| **Shopping**  | **Taobao**       | `taobao_search_product`  | Recherche de produits                                    | 🚧 Mock |
+
+---
+
 ## 🏗️ Architecture
 
 DragonMCP agit comme un middleware entre les agents IA et diverses API de services locaux.
@@ -77,6 +94,8 @@ Pour plus de détails, veuillez vous référer au [Document d'Architecture Techn
 ### Phase 1 : MVP (Actuel)
 - [x] **Framework Principal**: Configuration Express + MCP SDK + TypeScript.
 - [x] **Voyage (MTR)**: Requête d'horaires en temps réel pour Island Line & Tsuen Wan Line.
+- [x] **Voyage (Amap)**: Recherche de POI et itinéraires à pied.
+- [x] **Mocks de Service**: Structure de base pour WeChat/Alipay/DiDi/Meituan/Taobao.
 - [ ] **Livraison de Nourriture (Démo)**: Simuler le processus de commande (Recherche Boutique -> Menu -> Panier).
 - [ ] **Configuration de Base**: Variables d'environnement & structure du projet.
 
@@ -114,7 +133,7 @@ Pour plus de détails, veuillez vous référer au [Document d'Architecture Techn
 3.  Configurer les variables d'environnement :
     ```bash
     cp .env.example .env
-    # Éditer .env si nécessaire (l'API MTR ne nécessite aucune clé actuellement)
+    # Éditer .env (AMAP_API_KEY requis pour les services de cartographie)
     ```
 
 ### Lancer le Serveur
@@ -167,7 +186,7 @@ Nous accueillons toutes les contributions ! Que vous soyez développeur, designe
 ### Nous avons besoin d'aide avec :
 1.  **Scripts Playwright**: Simuler les flux web des applications de livraison de nourriture (Meituan/Ele.me).
 2.  **Plus de Lignes MTR**: Ajouter des données de station pour East Rail Line, Tuen Ma Line, etc.
-3.  **Docs**: Traduire la documentation dans d'autres langues.
+3.  **Intégration API Réelle**: Remplacer les mocks par de vraies API pour WeChat/Alipay/DiDi.
 
 Voir [CONTRIBUTING.md](CONTRIBUTING.md) (Bientôt disponible) pour plus de détails.
 

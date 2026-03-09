@@ -42,6 +42,23 @@ DragonMCP 是一个专为 AI Agent 设计的 Model Context Protocol (MCP) 服务
 
 ---
 
+## 🛠️ 支持的服务 (Beta)
+
+我们正在积极拓展本地生活服务的支持。以下是目前已集成的接口（部分为开发用的 Mock/占位符）：
+
+| 分类     | 服务商         | 工具名称                 | 描述                           | 状态     |
+| :------- | :------------- | :----------------------- | :----------------------------- | :------- |
+| **出行** | **港铁 (MTR)** | `search_mtr_schedule`    | 实时列车时刻表 (港岛线/荃湾线) | ✅ 已上线 |
+|          | **高德地图**   | `amap_search_poi`        | 搜索 POI (餐厅、酒店等)        | ✅ 已上线 |
+|          | **高德地图**   | `amap_walking_direction` | 步行路径规划                   | ✅ 已上线 |
+|          | **滴滴出行**   | `book_taxi_didi`         | 预估价格并叫车                 | 🚧 模拟中 |
+| **支付** | **微信支付**   | `wechat_pay_create`      | 创建支付订单                   | 🚧 模拟中 |
+|          | **支付宝**     | `alipay_pay_create`      | 创建支付订单                   | 🚧 模拟中 |
+| **生活** | **美团**       | `meituan_search_food`    | 搜索外卖美食                   | 🚧 模拟中 |
+| **购物** | **淘宝**       | `taobao_search_product`  | 搜索商品                       | 🚧 模拟中 |
+
+---
+
 ## 🏗️ 架构设计
 
 DragonMCP 作为 AI Agent 与各类本地服务 API 之间的中间件。
@@ -75,6 +92,8 @@ graph TD
 ### 第一阶段：MVP（进行中）
 - [x] **核心框架**: Express + MCP SDK + TypeScript 配置。
 - [x] **出行 (MTR)**: 港岛线与荃湾线实时班次查询。
+- [x] **出行 (高德)**: POI 搜索与步行导航。
+- [x] **服务模拟**: 微信/支付宝/滴滴/美团/淘宝的基础结构。
 - [ ] **外卖 (Demo)**: 模拟点单流程（搜店 -> 选品 -> 购物车）。
 - [ ] **基础配置**: 环境变量与项目结构。
 
@@ -112,7 +131,7 @@ graph TD
 3.  配置环境变量:
     ```bash
     cp .env.example .env
-    # 编辑 .env 文件（目前 MTR API 无需密钥）
+    # 编辑 .env (地图服务需要 AMAP_API_KEY)
     ```
 
 ### 运行服务器
@@ -165,7 +184,7 @@ NODE_OPTIONS="$NODE_OPTIONS --experimental-vm-modules" npm test
 ### 我们急需：
 1.  **Playwright 脚本**: 模拟外卖平台（美团/饿了么）网页流程。
 2.  **更多地铁线路**: 补充东铁线、屯马线等站点数据。
-3.  **文档**: 翻译文档。
+3.  **真实 API 集成**: 替换微信/支付宝/滴滴的 Mock 实现。
 
 详情请参阅 [CONTRIBUTING.md](CONTRIBUTING.md)（即将推出）。
 
