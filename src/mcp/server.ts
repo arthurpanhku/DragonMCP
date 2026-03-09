@@ -7,6 +7,9 @@ import { AlipayService } from "../services/payment/alipay/service.js";
 import { DidiService } from "../services/travel/didi/service.js";
 import { MeituanService } from "../services/lifestyle/meituan/service.js";
 import { TaobaoService } from "../services/ecommerce/taobao/service.js";
+import { GrabService } from "../services/travel/grab/service.js";
+import { LinePayService } from "../services/payment/linepay/service.js";
+import { NaverMapService } from "../services/travel/naver/service.js";
 
 // Create an MCP server
 export const mcpServer = new McpServer({
@@ -15,7 +18,7 @@ export const mcpServer = new McpServer({
 });
 
 // -------------------------------------------------------------------------
-// Travel Tools
+// Travel Tools (Greater China)
 // -------------------------------------------------------------------------
 
 mcpServer.tool(
@@ -87,7 +90,44 @@ mcpServer.tool(
 );
 
 // -------------------------------------------------------------------------
-// Payment Tools
+// Travel Tools (Asia Expansion)
+// -------------------------------------------------------------------------
+
+mcpServer.tool(
+    "book_ride_grab",
+    "Estimate and book a ride via Grab (Singapore/SE Asia) (Mock)",
+    {
+        pickup: z.string().describe("Pickup location name or address"),
+        dropoff: z.string().describe("Dropoff location name or address"),
+        serviceType: z.enum(["JustGrab", "GrabCar", "GrabHitch"]).default("JustGrab").describe("Service type"),
+    },
+    async ({ pickup, dropoff, serviceType }) => {
+        const estimate = await GrabService.estimateRide({ pickup, dropoff, serviceType: serviceType as any });
+        const bookingId = await GrabService.bookRide({ pickup, dropoff, serviceType: serviceType as any });
+        return {
+            content: [{ type: "text", text: `Grab Ride Booked!\nBooking ID: ${bookingId}\nPrice: ${estimate.currency} ${estimate.price}\nETA: ${estimate.estimatedTime} mins` }],
+        };
+    }
+);
+
+mcpServer.tool(
+    "naver_map_search",
+    "Search for places in Korea using Naver Maps (Mock)",
+    {
+        keyword: z.string().describe("Search keyword (e.g. 'BBQ', 'Hotel')"),
+    },
+    async ({ keyword }) => {
+        const results = await NaverMapService.searchPlace(keyword);
+        const text = results.map(r => `- ${r.title} (${r.category})\n  Address: ${r.roadAddress}`).join('\n');
+        return {
+            content: [{ type: "text", text: `Naver Map Results for "${keyword}":\n${text}` }],
+        };
+    }
+);
+
+
+// -------------------------------------------------------------------------
+// Payment Tools (Greater China)
 // -------------------------------------------------------------------------
 
 mcpServer.tool(
@@ -126,6 +166,27 @@ mcpServer.tool(
         });
         return {
             content: [{ type: "text", text: `Alipay Order Created.\nTrade No: ${result.outTradeNo}\nQR Code: ${result.qrCode}` }],
+        };
+    }
+);
+
+// -------------------------------------------------------------------------
+// Payment Tools (Asia Expansion)
+// -------------------------------------------------------------------------
+
+mcpServer.tool(
+    "line_pay_request",
+    "Request a payment via LINE Pay (Japan/Taiwan/Thailand) (Mock)",
+    {
+        amount: z.number().describe("Amount to pay"),
+        currency: z.string().default("JPY").describe("Currency code (JPY, TWD, THB)"),
+        productName: z.string().describe("Product name"),
+        orderId: z.string().describe("Unique order ID"),
+    },
+    async ({ amount, currency, productName, orderId }) => {
+        const result = await LinePayService.requestPayment({ amount, currency, productName, orderId });
+        return {
+            content: [{ type: "text", text: `LINE Pay Request Success.\nTransaction ID: ${result.info.transactionId}\nPayment URL: ${result.info.paymentUrl.web}` }],
         };
     }
 );

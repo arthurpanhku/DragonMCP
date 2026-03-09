@@ -61,6 +61,16 @@ We are actively expanding our support for local services. Below are the currentl
 
 ---
 
+## ⚠️ Security & Disclaimer
+
+> **IMPORTANT**: This project includes Mock implementations for sensitive services like payments (WeChat Pay, Alipay) and ride-hailing (Didi).
+
+*   **Do NOT** use real financial data or personal credentials in the current version.
+*   The payment tools (`wechat_pay_create`, `alipay_pay_create`) currently return **fake data** for demonstration purposes only. No actual money is transferred.
+*   When integrating real APIs in the future, ensure you follow strict security protocols (OAuth, HTTPS, Token Management).
+
+---
+
 ## 🏗️ Architecture
 
 DragonMCP acts as a middleware between AI Agents and various local service APIs.
@@ -168,6 +178,19 @@ Add the following to your `claude_desktop_config.json`:
 
 ---
 
+## ❓ FAQ & Troubleshooting
+
+### Q: Why do I get "Station not found" for MTR query?
+A: Currently, only **Island Line** and **Tsuen Wan Line** are supported. Please check if the station name is spelled correctly (e.g., "Admiralty", "Central", "Mong Kok").
+
+### Q: How do I get an Amap (Gaode) API Key?
+A: You need to register at the [Amap Open Platform](https://lbs.amap.com/), create a "Web Service" application, and copy the Key to your `.env` file as `AMAP_API_KEY`.
+
+### Q: Can I use this for real payments?
+A: **No.** The current payment tools are mocks. Do not use them for real transactions.
+
+---
+
 ## 🧪 Testing
 
 Run unit and integration tests:
@@ -189,6 +212,14 @@ We welcome all contributions! Whether you are a developer, designer, or product 
 3.  **Real API Integration**: Replacing mocks with real APIs for WeChat/Alipay/Didi.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) (Coming Soon) for details.
+
+---
+
+## 🙏 Acknowledgments
+
+*   **Anthropic**: For creating the Model Context Protocol (MCP).
+*   **MTR Corporation**: For providing the Open Data API.
+*   **Amap (Gaode)**: For the map and POI services.
 
 ---
 

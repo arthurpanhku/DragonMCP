@@ -61,6 +61,16 @@ Nous étendons activement notre support pour les services locaux. Voici les inte
 
 ---
 
+## ⚠️ Sécurité & Avertissement
+
+> **IMPORTANT**: Ce projet inclut des implémentations Mock pour des services sensibles comme les paiements (WeChat Pay, Alipay) et les VTC (DiDi).
+
+*   **NE PAS** utiliser de données financières réelles ou d'identifiants personnels dans la version actuelle.
+*   Les outils de paiement (`wechat_pay_create`, `alipay_pay_create`) renvoient actuellement des **données factices** uniquement à des fins de démonstration. Aucun transfert d'argent réel n'est effectué.
+*   Lors de l'intégration d'API réelles à l'avenir, assurez-vous de suivre des protocoles de sécurité stricts (OAuth, HTTPS, Gestion des Tokens).
+
+---
+
 ## 🏗️ Architecture
 
 DragonMCP agit comme un middleware entre les agents IA et diverses API de services locaux.
@@ -168,6 +178,19 @@ Ajoutez ce qui suit à votre `claude_desktop_config.json` :
 
 ---
 
+## ❓ FAQ & Dépannage
+
+### Q : Pourquoi est-ce que j'obtiens "Station not found" pour la requête MTR ?
+R : Actuellement, seules les **Island Line** et **Tsuen Wan Line** sont supportées. Veuillez vérifier si le nom de la station est correctement orthographié (par exemple, "Admiralty", "Central", "Mong Kok").
+
+### Q : Comment obtenir une clé API Amap (Gaode) ?
+R : Vous devez vous inscrire sur la [Plateforme Ouverte Amap](https://lbs.amap.com/), créer une application "Web Service", et copier la clé dans votre fichier `.env` sous `AMAP_API_KEY`.
+
+### Q : Puis-je utiliser ceci pour de vrais paiements ?
+R : **Non.** Les outils de paiement actuels sont des mocks. Ne les utilisez pas pour des transactions réelles.
+
+---
+
 ## 🧪 Tests
 
 Exécuter les tests unitaires et d'intégration :
@@ -189,6 +212,14 @@ Nous accueillons toutes les contributions ! Que vous soyez développeur, designe
 3.  **Intégration API Réelle**: Remplacer les mocks par de vraies API pour WeChat/Alipay/DiDi.
 
 Voir [CONTRIBUTING.md](CONTRIBUTING.md) (Bientôt disponible) pour plus de détails.
+
+---
+
+## 🙏 Remerciements
+
+*   **Anthropic**: Pour avoir créé le Model Context Protocol (MCP).
+*   **MTR Corporation**: Pour avoir fourni l'API de données ouvertes.
+*   **Amap (Gaode)**: Pour les services de cartographie et de POI.
 
 ---
 

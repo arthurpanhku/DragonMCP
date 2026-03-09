@@ -59,6 +59,16 @@ DragonMCP 是一个专为 AI Agent 设计的 Model Context Protocol (MCP) 服务
 
 ---
 
+## ⚠️ 安全与免责声明
+
+> **重要提示**: 本项目包含支付（微信、支付宝）和打车（滴滴）等敏感服务的 Mock 实现。
+
+*   **请勿** 在当前版本中使用真实的财务数据或个人凭证。
+*   支付工具 (`wechat_pay_create`, `alipay_pay_create`) 目前仅返回用于演示的 **虚假数据**。不会发生真实的资金转账。
+*   未来集成真实 API 时，请务必遵守严格的安全协议（OAuth, HTTPS, Token 管理）。
+
+---
+
 ## 🏗️ 架构设计
 
 DragonMCP 作为 AI Agent 与各类本地服务 API 之间的中间件。
@@ -166,6 +176,19 @@ SSE 端点: `http://localhost:3000/mcp/sse`
 
 ---
 
+## ❓ 常见问题 (FAQ)
+
+### Q: 为什么 MTR 查询显示 "Station not found"？
+A: 目前仅支持 **港岛线** 和 **荃湾线**。请检查站名拼写是否正确（如 "Admiralty", "金钟", "Mong Kok", "旺角"）。
+
+### Q: 如何获取高德地图 (Amap) API Key？
+A: 您需要在 [高德开放平台](https://lbs.amap.com/) 注册，创建“Web服务”应用，并将 Key 复制到 `.env` 文件的 `AMAP_API_KEY` 字段中。
+
+### Q: 我可以用它进行真实支付吗？
+A: **不行。** 目前的支付工具仅为 Mock（模拟）实现。请勿用于真实交易。
+
+---
+
 ## 🧪 测试
 
 运行单元测试和集成测试:
@@ -187,6 +210,14 @@ NODE_OPTIONS="$NODE_OPTIONS --experimental-vm-modules" npm test
 3.  **真实 API 集成**: 替换微信/支付宝/滴滴的 Mock 实现。
 
 详情请参阅 [CONTRIBUTING.md](CONTRIBUTING.md)（即将推出）。
+
+---
+
+## 🙏 致谢
+
+*   **Anthropic**: 创建了 Model Context Protocol (MCP)。
+*   **MTR Corporation**: 提供了开放数据 API。
+*   **高德地图 (Amap)**: 提供了地图和 POI 服务。
 
 ---
 

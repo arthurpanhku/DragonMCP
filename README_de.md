@@ -61,6 +61,16 @@ Wir erweitern aktiv unsere Unterstützung für lokale Dienste. Hier sind die der
 
 ---
 
+## ⚠️ Sicherheit & Haftungsausschluss
+
+> **WICHTIG**: Dieses Projekt enthält Mock-Implementierungen für sensible Dienste wie Zahlungen (WeChat Pay, Alipay) und Fahrdienste (DiDi).
+
+*   **Verwenden Sie NICHT** echte Finanzdaten oder persönliche Zugangsdaten in der aktuellen Version.
+*   Die Zahlungstools (`wechat_pay_create`, `alipay_pay_create`) geben derzeit nur **gefälschte Daten** zu Demonstrationszwecken zurück. Es wird kein echtes Geld überwiesen.
+*   Bei der Integration echter APIs in der Zukunft müssen Sie strenge Sicherheitsprotokolle (OAuth, HTTPS, Token-Management) befolgen.
+
+---
+
 ## 🏗️ Architektur
 
 DragonMCP fungiert als Middleware zwischen KI-Agenten und verschiedenen lokalen Dienst-APIs.
@@ -168,6 +178,19 @@ Fügen Sie Folgendes zu Ihrer `claude_desktop_config.json` hinzu:
 
 ---
 
+## ❓ FAQ & Fehlerbehebung
+
+### F: Warum erhalte ich "Station not found" für die MTR-Abfrage?
+A: Derzeit werden nur **Island Line** und **Tsuen Wan Line** unterstützt. Bitte überprüfen Sie, ob der Stationsname korrekt geschrieben ist (z. B. "Admiralty", "Central", "Mong Kok").
+
+### F: Wie erhalte ich einen Amap (Gaode) API-Schlüssel?
+A: Sie müssen sich auf der [Amap Open Platform](https://lbs.amap.com/) registrieren, eine "Web Service"-Anwendung erstellen und den Schlüssel als `AMAP_API_KEY` in Ihre `.env`-Datei kopieren.
+
+### F: Kann ich dies für echte Zahlungen verwenden?
+A: **Nein.** Die aktuellen Zahlungstools sind Mocks. Verwenden Sie sie nicht für echte Transaktionen.
+
+---
+
 ## 🧪 Testen
 
 Führen Sie Unit- und Integrationstests aus:
@@ -189,6 +212,14 @@ Wir begrüßen alle Beiträge! Egal ob Entwickler, Designer oder Produktvordenke
 3.  **Echte API-Integration**: Ersetzen von Mocks durch echte APIs für WeChat/Alipay/DiDi.
 
 Siehe [CONTRIBUTING.md](CONTRIBUTING.md) (Demnächst) für Details.
+
+---
+
+## 🙏 Danksagung
+
+*   **Anthropic**: Für die Erstellung des Model Context Protocol (MCP).
+*   **MTR Corporation**: Für die Bereitstellung der Open Data API.
+*   **Amap (Gaode)**: Für die Karten- und POI-Dienste.
 
 ---
 
