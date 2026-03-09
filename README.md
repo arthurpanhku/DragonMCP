@@ -187,22 +187,28 @@ SSE Endpoint: `http://localhost:3000/mcp/sse`
 
 ### Connect to Claude Desktop
 
-Add the following to your `claude_desktop_config.json`:
+1.  Build the project:
+    ```bash
+    npm run build
+    ```
 
-```json
-{
-  "mcpServers": {
-    "DragonMCP": {
-      "command": "node",
-      "args": ["/path/to/DragonMCP/dist/server.js"], 
-      "env": {
-        "NODE_ENV": "production"
+2.  Add the following to your `claude_desktop_config.json`:
+
+    ```json
+    {
+      "mcpServers": {
+        "DragonMCP": {
+          "command": "node",
+          "args": ["/path/to/DragonMCP/dist/server.js"], 
+          "env": {
+            "NODE_ENV": "production",
+            "AMAP_API_KEY": "your_amap_api_key_here"
+          }
+        }
       }
     }
-  }
-}
-```
-*(Note: For local dev, you might need to build first or point to the ts-node wrapper)*
+    ```
+    *(Note: Replace `/path/to/DragonMCP` with your actual absolute path)*
 
 ---
 

@@ -95,6 +95,27 @@ export const MTR_STATIONS: Record<string, MTRStation> = {
     TIS: { code: 'TIS', name: { en: 'Tin Shui Wai', zh: '天水围' } },
     SIH: { code: 'SIH', name: { en: 'Siu Hong', zh: '兆康' } },
     TUM: { code: 'TUM', name: { en: 'Tuen Mun', zh: '屯门' } },
+
+    // South Island Line (SIL)
+    OCP: { code: 'OCP', name: { en: 'Ocean Park', zh: '海洋公园' } },
+    WCH: { code: 'WCH', name: { en: 'Wong Chuk Hang', zh: '黄竹坑' } },
+    LET: { code: 'LET', name: { en: 'Lei Tung', zh: '利东' } },
+    SOH: { code: 'SOH', name: { en: 'South Horizons', zh: '海怡半岛' } },
+
+    // Tung Chung Line (TCL)
+    KOW: { code: 'KOW', name: { en: 'Kowloon', zh: '九龙' } },
+    OLY: { code: 'OLY', name: { en: 'Olympic', zh: '奥运' } },
+    TSY: { code: 'TSY', name: { en: 'Tsing Yi', zh: '青衣' } },
+    SUN: { code: 'SUN', name: { en: 'Sunny Bay', zh: '欣澳' } },
+    TUC: { code: 'TUC', name: { en: 'Tung Chung', zh: '东涌' } },
+
+    // Airport Express (AEL)
+    HOK: { code: 'HOK', name: { en: 'Hong Kong', zh: '香港' } },
+    AIR: { code: 'AIR', name: { en: 'Airport', zh: '机场' } },
+    AWE: { code: 'AWE', name: { en: 'AsiaWorld-Expo', zh: '博览馆' } },
+
+    // Disneyland Resort Line (DRL)
+    DIS: { code: 'DIS', name: { en: 'Disneyland Resort', zh: '迪士尼' } },
 };
 
 export const MTR_LINES: Record<string, MTRLine> = {
@@ -139,5 +160,33 @@ export const MTR_LINES: Record<string, MTRLine> = {
         stations: ['WKS', 'MOS', 'HEO', 'TSH', 'SHM', 'CIO', 'STW', 'CKT', 'TAW', 'HIK', 'DIH', 'KAT', 'SUW', 'TKW', 'HOM', 'HUH', 'AUS', 'NAC', 'MEF', 'TWW', 'KSR', 'YUL', 'LOP', 'TIS', 'SIH', 'TUM'],
         upDest: 'TUM',
         downDest: 'WKS',
+    },
+    SIL: {
+        code: 'SIL',
+        name: { en: 'South Island Line', zh: '南港岛线' },
+        stations: ['ADM', 'OCP', 'WCH', 'LET', 'SOH'],
+        upDest: 'SOH',
+        downDest: 'ADM',
+    },
+    TCL: {
+        code: 'TCL',
+        name: { en: 'Tung Chung Line', zh: '东涌线' },
+        stations: ['HOK', 'KOW', 'OLY', 'NAC', 'LAK', 'TSY', 'SUN', 'TUC'],
+        upDest: 'TUC',
+        downDest: 'HOK',
+    },
+    AEL: {
+        code: 'AEL',
+        name: { en: 'Airport Express', zh: '机场快线' },
+        stations: ['HOK', 'KOW', 'TSY', 'AIR', 'AWE'],
+        upDest: 'AWE',
+        downDest: 'HOK',
+    },
+    DRL: {
+        code: 'DRL',
+        name: { en: 'Disneyland Resort Line', zh: '迪士尼线' },
+        stations: ['SUN', 'DIS'],
+        upDest: 'DIS',
+        downDest: 'SUN',
     },
 };

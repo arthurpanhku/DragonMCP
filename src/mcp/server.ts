@@ -163,7 +163,7 @@ mcpServer.tool(
 
 mcpServer.tool(
     "book_taxi_didi",
-    "Estimate and book a taxi via Didi (Mock)",
+    "Estimate and book a taxi via Didi (Mock/Demo Only)",
     {
         originLat: z.number().describe("Origin Latitude"),
         originLng: z.number().describe("Origin Longitude"),
@@ -179,7 +179,7 @@ mcpServer.tool(
         const orderId = await DidiService.requestRide(request);
 
         return {
-            content: [{ type: "text", text: `Didi Ride Booked!\nOrder ID: ${orderId}\nEstimated Price: ${estimate.price} CNY\nDuration: ${estimate.duration} mins` }],
+            content: [{ type: "text", text: `[Mock] Didi Ride Booked!\nOrder ID: ${orderId}\nEstimated Price: ${estimate.price} CNY\nDuration: ${estimate.duration} mins` }],
         };
     }
 );
@@ -190,7 +190,7 @@ mcpServer.tool(
 
 mcpServer.tool(
     "book_ride_grab",
-    "Estimate and book a ride via Grab (Singapore/SE Asia) (Mock)",
+    "Estimate and book a ride via Grab (Singapore/SE Asia) (Mock/Demo Only)",
     {
         pickup: z.string().describe("Pickup location name or address"),
         dropoff: z.string().describe("Dropoff location name or address"),
@@ -200,14 +200,14 @@ mcpServer.tool(
         const estimate = await GrabService.estimateRide({ pickup, dropoff, serviceType: serviceType as any });
         const bookingId = await GrabService.bookRide({ pickup, dropoff, serviceType: serviceType as any });
         return {
-            content: [{ type: "text", text: `Grab Ride Booked!\nBooking ID: ${bookingId}\nPrice: ${estimate.currency} ${estimate.price}\nETA: ${estimate.estimatedTime} mins` }],
+            content: [{ type: "text", text: `[Mock] Grab Ride Booked!\nBooking ID: ${bookingId}\nPrice: ${estimate.currency} ${estimate.price}\nETA: ${estimate.estimatedTime} mins` }],
         };
     }
 );
 
 mcpServer.tool(
     "naver_map_search",
-    "Search for places in Korea using Naver Maps (Mock)",
+    "Search for places in Korea using Naver Maps (Mock/Demo Only)",
     {
         keyword: z.string().describe("Search keyword (e.g. 'BBQ', 'Hotel')"),
     },
@@ -215,7 +215,7 @@ mcpServer.tool(
         const results = await NaverMapService.searchPlace(keyword);
         const text = results.map(r => `- ${r.title} (${r.category})\n  Address: ${r.roadAddress}`).join('\n');
         return {
-            content: [{ type: "text", text: `Naver Map Results for "${keyword}":\n${text}` }],
+            content: [{ type: "text", text: `[Mock] Naver Map Results for "${keyword}":\n${text}` }],
         };
     }
 );
@@ -227,7 +227,7 @@ mcpServer.tool(
 
 mcpServer.tool(
     "wechat_pay_create",
-    "Initiate a WeChat Pay transaction (Mock)",
+    "Initiate a WeChat Pay transaction (Mock/Demo Only)",
     {
         amount: z.number().describe("Amount to pay in CNY (converted to cents internally)"),
         description: z.string().describe("Description of the payment"),
@@ -240,14 +240,14 @@ mcpServer.tool(
             outTradeNo: outTradeNo || `order_${Date.now()}`,
         });
         return {
-            content: [{ type: "text", text: `WeChat Pay Order Created.\nCode: ${result.return_code}\nMsg: ${result.return_msg}` }],
+            content: [{ type: "text", text: `[Mock] WeChat Pay Order Created.\nCode: ${result.return_code}\nMsg: ${result.return_msg}` }],
         };
     }
 );
 
 mcpServer.tool(
     "alipay_pay_create",
-    "Initiate an Alipay transaction (Mock)",
+    "Initiate an Alipay transaction (Mock/Demo Only)",
     {
         amount: z.string().describe("Amount to pay in CNY"),
         subject: z.string().describe("Order subject/title"),
@@ -260,7 +260,7 @@ mcpServer.tool(
             outTradeNo: outTradeNo,
         });
         return {
-            content: [{ type: "text", text: `Alipay Order Created.\nTrade No: ${result.outTradeNo}\nQR Code: ${result.qrCode}` }],
+            content: [{ type: "text", text: `[Mock] Alipay Order Created.\nTrade No: ${result.outTradeNo}\nQR Code: ${result.qrCode}` }],
         };
     }
 );
@@ -271,7 +271,7 @@ mcpServer.tool(
 
 mcpServer.tool(
     "line_pay_request",
-    "Request a payment via LINE Pay (Japan/Taiwan/Thailand) (Mock)",
+    "Request a payment via LINE Pay (Japan/Taiwan/Thailand) (Mock/Demo Only)",
     {
         amount: z.number().describe("Amount to pay"),
         currency: z.string().default("JPY").describe("Currency code (JPY, TWD, THB)"),
@@ -281,7 +281,7 @@ mcpServer.tool(
     async ({ amount, currency, productName, orderId }) => {
         const result = await LinePayService.requestPayment({ amount, currency, productName, orderId });
         return {
-            content: [{ type: "text", text: `LINE Pay Request Success.\nTransaction ID: ${result.info.transactionId}\nPayment URL: ${result.info.paymentUrl.web}` }],
+            content: [{ type: "text", text: `[Mock] LINE Pay Request Success.\nTransaction ID: ${result.info.transactionId}\nPayment URL: ${result.info.paymentUrl.web}` }],
         };
     }
 );
@@ -292,7 +292,7 @@ mcpServer.tool(
 
 mcpServer.tool(
     "meituan_search_food",
-    "Search for food/restaurants on Meituan (Mock)",
+    "Search for food/restaurants on Meituan (Mock/Demo Only)",
     {
         keyword: z.string().describe("Food or restaurant name"),
         location: z.string().describe("Current location or address"),
@@ -301,14 +301,14 @@ mcpServer.tool(
         const results = await MeituanService.searchRestaurants(keyword, location);
         const text = results.map(r => `- ${r.name} (Rating: ${r.rating}, Min: ${r.minOrder})`).join('\n');
         return {
-            content: [{ type: "text", text: `Meituan Results for "${keyword}":\n${text}` }],
+            content: [{ type: "text", text: `[Mock] Meituan Results for "${keyword}":\n${text}` }],
         };
     }
 );
 
 mcpServer.tool(
     "taobao_search_product",
-    "Search for products on Taobao (Mock)",
+    "Search for products on Taobao (Mock/Demo Only)",
     {
         keyword: z.string().describe("Product keyword"),
     },
@@ -316,7 +316,7 @@ mcpServer.tool(
         const results = await TaobaoService.searchProducts(keyword);
         const text = results.map(p => `- ${p.title} (Price: ¥${p.price}, Sales: ${p.sales})`).join('\n');
         return {
-            content: [{ type: "text", text: `Taobao Results for "${keyword}":\n${text}` }],
+            content: [{ type: "text", text: `[Mock] Taobao Results for "${keyword}":\n${text}` }],
         };
     }
 );

@@ -1,0 +1,31 @@
+# DragonMCP
+
+DragonMCP is a Model Context Protocol (MCP) server that connects AI Agents to local life services in Greater China and Asia.
+
+## Features
+
+- **MTR Real-time Schedule**: Query train schedules for HK MTR lines (Island, Tsuen Wan, Kwun Tong, Tseung Kwan O, East Rail, Tuen Mun, etc.).
+- **Amap (Gaode) Integration**: POI search, Walking/Driving/Transit/Bicycling directions for Mainland China.
+- **HK Weather**: Real-time weather reports from Hong Kong Observatory.
+- **Cross-Region Transit**: Unified `search_transit_asia` tool for CN, HK, JP, KR, SG.
+- **Mock Services**: Simulation for Didi, Grab, WeChat Pay, Alipay, etc.
+
+## Tools
+
+### Travel
+- `search_mtr_schedule(from, to)`: Get MTR train schedule.
+- `amap_search_poi(keywords, city)`: Search places in China.
+- `amap_walking_direction(origin, destination)`: Walking route.
+- `amap_driving_direction(origin, destination)`: Driving route.
+- `amap_transit_direction(origin, destination, city)`: Public transit route.
+- `amap_bicycling_direction(origin, destination)`: Bicycling route.
+- `search_transit_asia(from, to, region)`: Unified transit search.
+- `hk_weather_current()`: HK weather report.
+
+### System
+- `system_run_selftest()`: Run health checks.
+
+## Documentation
+- [README](README.md)
+- [Architecture](.trae/documents/dragon_mcp_technical_architecture.md)
+- [PRD](.trae/documents/dragon_mcp_prd.md)
