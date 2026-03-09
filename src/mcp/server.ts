@@ -147,6 +147,21 @@ mcpServer.tool(
 );
 
 mcpServer.tool(
+    "amap_bicycling_direction",
+    "Get bicycling directions using Amap",
+    {
+        origin: z.string().describe("Origin longitude,latitude"),
+        destination: z.string().describe("Destination longitude,latitude"),
+    },
+    async ({ origin, destination }) => {
+        const result = await AmapService.getBicyclingDirection(origin, destination);
+        return {
+            content: [{ type: "text", text: result }],
+        };
+    }
+);
+
+mcpServer.tool(
     "book_taxi_didi",
     "Estimate and book a taxi via Didi (Mock)",
     {

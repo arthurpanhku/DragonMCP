@@ -35,6 +35,66 @@ export const MTR_STATIONS: Record<string, MTRStation> = {
     KWH: { code: 'KWH', name: { en: 'Kwai Hing', zh: '葵兴' } },
     TWH: { code: 'TWH', name: { en: 'Tai Wo Hau', zh: '大窝口' } },
     TSW: { code: 'TSW', name: { en: 'Tsuen Wan', zh: '荃湾' } },
+
+    // Kwun Tong Line (KTL)
+    WHA: { code: 'WHA', name: { en: 'Whampoa', zh: '黄埔' } },
+    HOM: { code: 'HOM', name: { en: 'Ho Man Tin', zh: '何文田' } },
+    SKM: { code: 'SKM', name: { en: 'Shek Kip Mei', zh: '石硖尾' } },
+    KOT: { code: 'KOT', name: { en: 'Kowloon Tong', zh: '九龙塘' } },
+    LOF: { code: 'LOF', name: { en: 'Lok Fu', zh: '乐富' } },
+    WTS: { code: 'WTS', name: { en: 'Wong Tai Sin', zh: '黄大仙' } },
+    DIH: { code: 'DIH', name: { en: 'Diamond Hill', zh: '钻石山' } },
+    CHH: { code: 'CHH', name: { en: 'Choi Hung', zh: '彩虹' } },
+    KOB: { code: 'KOB', name: { en: 'Kowloon Bay', zh: '九龙湾' } },
+    NTK: { code: 'NTK', name: { en: 'Ngau Tau Kok', zh: '牛头角' } },
+    KWT: { code: 'KWT', name: { en: 'Kwun Tong', zh: '观塘' } },
+    LAT: { code: 'LAT', name: { en: 'Lam Tin', zh: '蓝田' } },
+    YAT: { code: 'YAT', name: { en: 'Yau Tong', zh: '油塘' } },
+    TIK: { code: 'TIK', name: { en: 'Tiu Keng Leng', zh: '调景岭' } },
+
+    // Tseung Kwan O Line (TKL)
+    TKO: { code: 'TKO', name: { en: 'Tseung Kwan O', zh: '将军澳' } },
+    LHP: { code: 'LHP', name: { en: 'LOHAS Park', zh: '康城' } },
+    HAH: { code: 'HAH', name: { en: 'Hang Hau', zh: '坑口' } },
+    POA: { code: 'POA', name: { en: 'Po Lam', zh: '宝琳' } },
+
+    // East Rail Line (EAL)
+    EXC: { code: 'EXC', name: { en: 'Exhibition Centre', zh: '会展' } },
+    HUH: { code: 'HUH', name: { en: 'Hung Hom', zh: '红磡' } },
+    TAW: { code: 'TAW', name: { en: 'Tai Wai', zh: '大围' } },
+    SHT: { code: 'SHT', name: { en: 'Sha Tin', zh: '沙田' } },
+    FOT: { code: 'FOT', name: { en: 'Fo Tan', zh: '火炭' } },
+    RAC: { code: 'RAC', name: { en: 'Racecourse', zh: '马场' } },
+    UNI: { code: 'UNI', name: { en: 'University', zh: '大学' } },
+    TAP: { code: 'TAP', name: { en: 'Tai Po Market', zh: '大埔墟' } },
+    TWO: { code: 'TWO', name: { en: 'Tai Wo', zh: '太和' } },
+    FAN: { code: 'FAN', name: { en: 'Fanling', zh: '粉岭' } },
+    SHS: { code: 'SHS', name: { en: 'Sheung Shui', zh: '上水' } },
+    LOW: { code: 'LOW', name: { en: 'Lo Wu', zh: '罗湖' } },
+    LMC: { code: 'LMC', name: { en: 'Lok Ma Chau', zh: '落马洲' } },
+
+    // Tuen Ma Line (TML)
+    WKS: { code: 'WKS', name: { en: 'Wu Kai Sha', zh: '乌溪沙' } },
+    MOS: { code: 'MOS', name: { en: 'Ma On Shan', zh: '马鞍山' } },
+    HEO: { code: 'HEO', name: { en: 'Heng On', zh: '恒安' } },
+    TSH: { code: 'TSH', name: { en: 'Tai Shui Hang', zh: '大水坑' } },
+    SHM: { code: 'SHM', name: { en: 'Shek Mun', zh: '石门' } },
+    CIO: { code: 'CIO', name: { en: 'City One', zh: '第一城' } },
+    STW: { code: 'STW', name: { en: 'Sha Tin Wai', zh: '沙田围' } },
+    CKT: { code: 'CKT', name: { en: 'Che Kung Temple', zh: '车公庙' } },
+    HIK: { code: 'HIK', name: { en: 'Hin Keng', zh: '显径' } },
+    KAT: { code: 'KAT', name: { en: 'Kai Tak', zh: '启德' } },
+    SUW: { code: 'SUW', name: { en: 'Sung Wong Toi', zh: '宋皇台' } },
+    TKW: { code: 'TKW', name: { en: 'To Kwa Wan', zh: '土瓜湾' } },
+    AUS: { code: 'AUS', name: { en: 'Austin', zh: '柯士甸' } },
+    NAC: { code: 'NAC', name: { en: 'Nam Cheong', zh: '南昌' } },
+    TWW: { code: 'TWW', name: { en: 'Tsuen Wan West', zh: '荃湾西' } },
+    KSR: { code: 'KSR', name: { en: 'Kam Sheung Road', zh: '锦上路' } },
+    YUL: { code: 'YUL', name: { en: 'Yuen Long', zh: '元朗' } },
+    LOP: { code: 'LOP', name: { en: 'Long Ping', zh: '朗屏' } },
+    TIS: { code: 'TIS', name: { en: 'Tin Shui Wai', zh: '天水围' } },
+    SIH: { code: 'SIH', name: { en: 'Siu Hong', zh: '兆康' } },
+    TUM: { code: 'TUM', name: { en: 'Tuen Mun', zh: '屯门' } },
 };
 
 export const MTR_LINES: Record<string, MTRLine> = {
@@ -51,5 +111,33 @@ export const MTR_LINES: Record<string, MTRLine> = {
         stations: ['CEN', 'ADM', 'TST', 'JOR', 'YMT', 'MOK', 'PEK', 'SSP', 'CSW', 'LCK', 'MEF', 'LAK', 'KWF', 'KWH', 'TWH', 'TSW'],
         upDest: 'TSW',
         downDest: 'CEN',
+    },
+    KTL: {
+        code: 'KTL',
+        name: { en: 'Kwun Tong Line', zh: '观塘线' },
+        stations: ['WHA', 'HOM', 'YMT', 'MOK', 'PEK', 'SKM', 'KOT', 'LOF', 'WTS', 'DIH', 'CHH', 'KOB', 'NTK', 'KWT', 'LAT', 'YAT', 'TIK'],
+        upDest: 'TIK',
+        downDest: 'WHA',
+    },
+    TKL: {
+        code: 'TKL',
+        name: { en: 'Tseung Kwan O Line', zh: '将军澳线' },
+        stations: ['NOP', 'QUB', 'YAT', 'TIK', 'TKO', 'LHP', 'HAH', 'POA'],
+        upDest: 'POA', // Note: TKL has split branches (LHP/POA), simple logic usually picks main branch
+        downDest: 'NOP',
+    },
+    EAL: {
+        code: 'EAL',
+        name: { en: 'East Rail Line', zh: '东铁线' },
+        stations: ['ADM', 'EXC', 'HUH', 'MOK', 'KOT', 'TAW', 'SHT', 'FOT', 'RAC', 'UNI', 'TAP', 'TWO', 'FAN', 'SHS', 'LOW', 'LMC'],
+        upDest: 'LOW', // EAL has split branches (LOW/LMC)
+        downDest: 'ADM',
+    },
+    TML: {
+        code: 'TML',
+        name: { en: 'Tuen Mun Line', zh: '屯马线' },
+        stations: ['WKS', 'MOS', 'HEO', 'TSH', 'SHM', 'CIO', 'STW', 'CKT', 'TAW', 'HIK', 'DIH', 'KAT', 'SUW', 'TKW', 'HOM', 'HUH', 'AUS', 'NAC', 'MEF', 'TWW', 'KSR', 'YUL', 'LOP', 'TIS', 'SIH', 'TUM'],
+        upDest: 'TUM',
+        downDest: 'WKS',
     },
 };

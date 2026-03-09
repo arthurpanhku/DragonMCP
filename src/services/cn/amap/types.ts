@@ -118,3 +118,24 @@ export interface AmapTransitRouteResponse {
         }[];
     };
 }
+
+export interface AmapBicyclingRouteResponse {
+    status: string;
+    info: string;
+    infocode: string;
+    route: {
+        origin: string;
+        destination: string;
+        paths: {
+            distance: string;
+            duration: string;
+            steps: {
+                instruction: string;
+                road: string;
+                distance: string;
+                duration: string;
+                action: string;
+            }[];
+        }[];
+    };
+}

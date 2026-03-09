@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { config } from '../../../config/index.js';
-import { AmapPOIResponse, AmapWalkingRouteResponse, AmapDrivingRouteResponse, AmapTransitRouteResponse, AmapPOI } from './types.js';
+import { AmapPOIResponse, AmapWalkingRouteResponse, AmapDrivingRouteResponse, AmapTransitRouteResponse, AmapBicyclingRouteResponse, AmapPOI } from './types.js';
 
 const AMAP_API_BASE = 'https://restapi.amap.com/v3';
 
@@ -228,6 +228,48 @@ export class AmapService {
         } catch (error) {
             console.error('Amap Transit Direction Error:', error);
             return 'Failed to fetch Amap transit direction data.';
+        }
+    }
+
+    /**
+     * Get bicycling directions
+     * @param origin Origin "longitude,latitude"
+     * @param destination Destination "longitude,latitude"
+     */
+    static async getBicyclingDirection(origin: string, destination: string): Promise<string> {
+        if (!this.apiKey) {
+            return 'Error: AMAP_API_KEY is not configured in .env';
+        }
+
+        try {
+            const response = await axios.get<AmapBicyclingRouteResponse>(`${AMAP_API_BASE}/direction/bicycling`, {
+                params: {
+                    key: this.apiKey,
+                    origin,
+                    destination,
+                },
+            });
+
+            if (response.data.status !== '1') {
+                return `Amap API Error: ${response.data.info}`;
+            }
+
+            const route = response.data.route;
+            if (!route.paths || !route.paths.length) {
+                return 'No bicycling route found.';
+            }
+
+            const path = route.paths[0];
+            const duration = Math.ceil(parseInt(path.duration) / 60); // minutes
+            const distance = path.distance;
+
+            const steps = path.steps.map(step => `- ${step.instruction} (${step.road})`).join('\n');
+
+            return `Bicycling Route:\nDistance: ${distance} meters\nEstimated Time: ${duration} mins\n\nSteps:\n${steps}`;
+
+        } catch (error) {
+            console.error('Amap Bicycling Direction Error:', error);
+            return 'Failed to fetch Amap bicycling direction data.';
         }
     }
 }
