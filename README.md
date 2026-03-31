@@ -9,7 +9,7 @@
 
   Let Claude / DeepSeek / Qwen directly order your takeout, hail a Didi, check high-speed rail tickets, and pay utility bills.
 
-  [Product Requirements (PRD)](.trae/documents/dragon_mcp_prd.md) • [Architecture](.trae/documents/dragon_mcp_technical_architecture.md) • [Contributing](#-contributing)
+  [Architecture](#-architecture) • [Contributing Guide](CONTRIBUTING.md)
 
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
   [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)](https://www.typescriptlang.org/)
@@ -106,7 +106,7 @@ graph TD
     end
 ```
 
-For more details, please refer to the [Technical Architecture Document](.trae/documents/dragon_mcp_technical_architecture.md).
+Architecture details are documented in this README and will be expanded in repo docs over time.
 
 ---
 
@@ -156,6 +156,10 @@ For more details, please refer to the [Technical Architecture Document](.trae/do
     cp .env.example .env
     # Edit .env (AMAP_API_KEY required for map services)
     ```
+
+   Minimum recommended variables:
+   - `AMAP_API_KEY`: required for Amap search and routing tools.
+   - `JWT_SECRET` and `ENCRYPTION_KEY`: required when `NODE_ENV=production`.
 
 ### Running the Server
 
@@ -230,7 +234,12 @@ A: **No.** The current payment tools are mocks. Do not use them for real transac
 Run unit and integration tests:
 
 ```bash
-# Enable experimental VM modules for Jest (ESM support)
+npm test
+```
+
+If your local Node/Jest setup requires ESM flags, you can run:
+
+```bash
 NODE_OPTIONS="$NODE_OPTIONS --experimental-vm-modules" npm test
 ```
 
@@ -245,7 +254,7 @@ We welcome all contributions! Whether you are a developer, designer, or product 
 2.  **More MTR Lines**: Adding station data for East Rail Line, Tuen Ma Line, etc.
 3.  **Real API Integration**: Replacing mocks with real APIs for WeChat/Alipay/Didi.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) (Coming Soon) for details.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ---
 

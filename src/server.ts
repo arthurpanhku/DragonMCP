@@ -2,11 +2,12 @@
  * local server entry file, for local development
  */
 import app from './app.js';
+import { config } from './config/index.js';
 
 /**
  * start server with port
  */
-const PORT = process.env.PORT || 3001;
+const PORT = config.port;
 
 const server = app.listen(PORT, () => {
   console.log(`Server ready on port ${PORT}`);

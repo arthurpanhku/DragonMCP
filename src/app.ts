@@ -8,16 +8,10 @@ import express, {
   type NextFunction,
 } from 'express';
 import cors from 'cors';
-import path from 'path';
 import dotenv from 'dotenv';
-import { fileURLToPath } from 'url';
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import { mcpServer } from './mcp/server.js';
 import { v4 as uuidv4 } from 'uuid';
-
-// for esm mode
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 // load env
 dotenv.config();
@@ -36,46 +30,54 @@ const transports = new Map<string, SSEServerTransport>();
 /**
  * MCP SSE Endpoint
  */
-app.get('/mcp/sse', async (req: Request, res: Response) => {
-  console.log('New MCP connection request');
+app.get('/mcp/sse', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    console.log('New MCP connection request');
 
-  const sessionId = uuidv4();
+    const sessionId = uuidv4();
 
-  // The client will send messages to this endpoint
-  // We append the sessionId to ensure we route to the correct transport
-  const messageEndpoint = `/mcp/messages?sessionId=${sessionId}`;
+    // The client will send messages to this endpoint
+    // We append the sessionId to ensure we route to the correct transport
+    const messageEndpoint = `/mcp/messages?sessionId=${sessionId}`;
 
-  const transport = new SSEServerTransport(messageEndpoint, res);
+    const transport = new SSEServerTransport(messageEndpoint, res);
 
-  transports.set(sessionId, transport);
+    transports.set(sessionId, transport);
 
-  transport.onclose = () => {
-    console.log(`MCP connection closed: ${sessionId}`);
-    transports.delete(sessionId);
-  };
+    transport.onclose = () => {
+      console.log(`MCP connection closed: ${sessionId}`);
+      transports.delete(sessionId);
+    };
 
-  await mcpServer.connect(transport);
+    await mcpServer.connect(transport);
+  } catch (error) {
+    next(error);
+  }
 });
 
 /**
  * MCP Messages Endpoint
  */
-app.post('/mcp/messages', async (req: Request, res: Response) => {
-  const sessionId = req.query.sessionId as string;
+app.post('/mcp/messages', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const sessionId = req.query.sessionId as string;
 
-  if (!sessionId) {
-    res.status(400).send('Missing sessionId');
-    return;
+    if (!sessionId) {
+      res.status(400).send('Missing sessionId');
+      return;
+    }
+
+    const transport = transports.get(sessionId);
+
+    if (!transport) {
+      res.status(404).send('Session not found');
+      return;
+    }
+
+    await transport.handlePostMessage(req, res);
+  } catch (error) {
+    next(error);
   }
-
-  const transport = transports.get(sessionId);
-
-  if (!transport) {
-    res.status(404).send('Session not found');
-    return;
-  }
-
-  await transport.handlePostMessage(req, res);
 });
 
 /**
