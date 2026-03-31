@@ -4,8 +4,21 @@ import path from 'path';
 // Load environment variables from .env file
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
+const env = process.env.NODE_ENV || 'development';
+
+const getSecuritySecret = (name: 'JWT_SECRET' | 'ENCRYPTION_KEY'): string => {
+    const value = process.env[name];
+
+    // Fail fast in production so insecure defaults are never used silently.
+    if (!value && env === 'production') {
+        throw new Error(`${name} is required in production`);
+    }
+
+    return value || '';
+};
+
 export const config = {
-    env: process.env.NODE_ENV || 'development',
+    env,
     port: parseInt(process.env.PORT || '3000', 10),
 
     supabase: {
@@ -20,8 +33,8 @@ export const config = {
     },
 
     security: {
-        jwtSecret: process.env.JWT_SECRET || 'default_secret',
-        encryptionKey: process.env.ENCRYPTION_KEY || 'default_encryption_key',
+        jwtSecret: getSecuritySecret('JWT_SECRET'),
+        encryptionKey: getSecuritySecret('ENCRYPTION_KEY'),
     },
 
     external: {
