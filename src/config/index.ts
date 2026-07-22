@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 
 // Load environment variables from .env file
-dotenv.config({ path: path.resolve(process.cwd(), '.env') });
+dotenv.config({ path: path.resolve(process.cwd(), '.env'), quiet: true });
 
 const env = process.env.NODE_ENV || 'development';
 

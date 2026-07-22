@@ -163,14 +163,23 @@ Architecture details are documented in this README and will be expanded in repo 
 
 ### Running the Server
 
-Start the development server with SSE support:
+Start the development HTTP server (Streamable HTTP at `/mcp`, with legacy SSE at `/mcp/sse`):
 
 ```bash
 npm run dev
 ```
 
-The server will start at `http://localhost:3000`.
-SSE Endpoint: `http://localhost:3000/mcp/sse`
+For a local MCP client that launches the server as a subprocess, use the stdio transport instead:
+
+```bash
+npm run dev:stdio
+
+# Or run the compiled entry point
+npm run build
+npm run start:stdio
+```
+
+In stdio mode, stdin and stdout carry MCP JSON-RPC messages. Diagnostic logs are written to stderr so they do not corrupt the protocol stream.
 
 ### Running with Docker
 
@@ -203,16 +212,15 @@ SSE Endpoint: `http://localhost:3000/mcp/sse`
       "mcpServers": {
         "DragonMCP": {
           "command": "node",
-          "args": ["/path/to/DragonMCP/dist/server.js"], 
+          "args": ["/path/to/DragonMCP/dist/stdio.js"],
           "env": {
-            "NODE_ENV": "production",
             "AMAP_API_KEY": "your_amap_api_key_here"
           }
         }
       }
     }
     ```
-    *(Note: Replace `/path/to/DragonMCP` with your actual absolute path)*
+    *(Note: Replace `/path/to/DragonMCP` with your actual absolute path. If you set `NODE_ENV=production`, also provide the required `JWT_SECRET` and `ENCRYPTION_KEY`.)*
 
 ---
 

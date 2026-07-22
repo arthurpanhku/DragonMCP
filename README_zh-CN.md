@@ -157,14 +157,23 @@ graph TD
 
 ### 运行服务器
 
-启动支持 SSE 的开发服务器:
+启动 HTTP 开发服务器（`/mcp` 使用 Streamable HTTP，`/mcp/sse` 保留兼容旧版 SSE 客户端）：
 
 ```bash
 npm run dev
 ```
 
-服务器将在 `http://localhost:3000` 启动。
-SSE 端点: `http://localhost:3000/mcp/sse`
+如果 MCP 客户端会把 DragonMCP 作为本地子进程启动，请使用 stdio 传输：
+
+```bash
+npm run dev:stdio
+
+# 或运行编译后的入口
+npm run build
+npm run start:stdio
+```
+
+stdio 模式通过 stdin/stdout 传输 MCP JSON-RPC 消息；诊断日志统一写入 stderr，避免污染协议数据。
 
 ### 使用 Docker 运行
 
@@ -192,15 +201,15 @@ SSE 端点: `http://localhost:3000/mcp/sse`
   "mcpServers": {
     "DragonMCP": {
       "command": "node",
-      "args": ["/path/to/DragonMCP/dist/server.js"], 
+      "args": ["/path/to/DragonMCP/dist/stdio.js"],
       "env": {
-        "NODE_ENV": "production"
+        "AMAP_API_KEY": "your_amap_api_key_here"
       }
     }
   }
 }
 ```
-*(注意：本地开发可能需要先构建或指向 ts-node 包装器)*
+*(请先运行 `npm run build`，并把路径替换为项目的绝对路径。若设置 `NODE_ENV=production`，还必须提供 `JWT_SECRET` 和 `ENCRYPTION_KEY`。)*
 
 ---
 

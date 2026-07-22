@@ -5,7 +5,7 @@ export class TaobaoService {
      * Search for products (Mock)
      */
     static async searchProducts(keyword: string): Promise<Product[]> {
-        console.log(`[Taobao] Searching for "${keyword}"`);
+        console.error(`[Taobao] Searching for "${keyword}"`);
 
         // Mock data
         return [

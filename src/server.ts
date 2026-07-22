@@ -9,8 +9,10 @@ import { config } from './config/index.js';
  */
 const PORT = config.port;
 
-const server = app.listen(PORT, () => {
-  console.log(`Server ready on port ${PORT}`);
+const HOST = '127.0.0.1';
+
+const server = app.listen(PORT, HOST, () => {
+  console.log(`Server ready at http://${HOST}:${PORT}`);
 });
 
 /**

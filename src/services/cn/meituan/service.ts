@@ -5,7 +5,7 @@ export class MeituanService {
      * Search for nearby restaurants (Mock)
      */
     static async searchRestaurants(keyword: string, location: string): Promise<Restaurant[]> {
-        console.log(`[Meituan] Searching for "${keyword}" near ${location}`);
+        console.error(`[Meituan] Searching for "${keyword}" near ${location}`);
 
         // Mock data
         return [
@@ -32,7 +32,7 @@ export class MeituanService {
      * Get restaurant menu (Mock)
      */
     static async getMenu(restaurantId: string): Promise<MenuItem[]> {
-        console.log(`[Meituan] Getting menu for ${restaurantId}`);
+        console.error(`[Meituan] Getting menu for ${restaurantId}`);
         return [
             { id: 'm_01', name: 'Combo A', price: 35 },
             { id: 'm_02', name: 'Combo B', price: 42 },
