@@ -1,31 +1,42 @@
 # DragonMCP
 
-DragonMCP is a Model Context Protocol (MCP) server that connects AI Agents to local life services in Greater China and Asia.
+DragonMCP is a Model Context Protocol (MCP) server providing Hong Kong and cross-border
+(Mainland China) open data to AI Agents. Every tool calls a live API — there are no mocks.
 
 ## Features
 
-- **MTR Real-time Schedule**: Query train schedules for HK MTR lines (Island, Tsuen Wan, Kwun Tong, Tseung Kwan O, East Rail, Tuen Mun, etc.).
-- **Amap (Gaode) Integration**: POI search, Walking/Driving/Transit/Bicycling directions for Mainland China.
-- **HK Weather**: Real-time weather reports from Hong Kong Observatory.
-- **Cross-Region Transit**: Unified `search_transit_asia` tool for CN, HK, JP, KR, SG.
-- **Mock Services**: Simulation for Didi, Grab, WeChat Pay, Alipay, etc.
+- **MTR Real-time Schedule**: Live train arrivals across all 10 HK MTR lines (Island, Tsuen Wan, Kwun Tong, Tseung Kwan O, East Rail, Tuen Ma, South Island, Tung Chung, Airport Express, Disneyland Resort). Station names accepted in English or Chinese. No API key required.
+- **HK Weather**: Current conditions and active warnings from the Hong Kong Observatory. No API key required.
+- **Amap (Gaode) Integration**: POI search and walking/driving/transit/bicycling directions for Mainland China. Requires AMAP_API_KEY.
+- **Unified Transit**: `search_transit_route` picks MTR or Amap based on region (HK, CN).
+- **Live Self-Test**: `system_run_selftest` probes every upstream and reports actual reachability.
 
 ## Tools
 
-### Travel
-- `search_mtr_schedule(from, to)`: Get MTR train schedule.
-- `amap_search_poi(keywords, city)`: Search places in China.
+### Hong Kong (no API key)
+- `search_mtr_schedule(from, to)`: Real-time MTR arrivals. Direct routes only; no transfer planning.
+- `hk_weather_current()`: HK Observatory weather report and warnings.
+
+### Mainland China (requires AMAP_API_KEY)
+- `amap_search_poi(keywords, city)`: Search places in Mainland China.
 - `amap_walking_direction(origin, destination)`: Walking route.
 - `amap_driving_direction(origin, destination)`: Driving route.
 - `amap_transit_direction(origin, destination, city)`: Public transit route.
 - `amap_bicycling_direction(origin, destination)`: Bicycling route.
-- `search_transit_asia(from, to, region)`: Unified transit search.
-- `hk_weather_current()`: HK weather report.
+
+### Cross-region
+- `search_transit_route(from, to, region, city?)`: Unified transit search. region is "HK" or "CN".
 
 ### System
-- `system_run_selftest()`: Run health checks.
+- `system_run_selftest()`: Live reachability check of all upstream data sources.
+
+## Limitations
+
+- No MTR transfer planning; two stations not on a shared line return an explicit failure.
+- East Rail and Tseung Kwan O branch handling is simplified to the main branch.
+- Amap tools cover Mainland China only and need a user-supplied key.
 
 ## Documentation
 - [README](README.md)
-- [Architecture](.trae/documents/dragon_mcp_technical_architecture.md)
-- [PRD](.trae/documents/dragon_mcp_prd.md)
+- [README (简体中文)](README_zh-CN.md)
+- [Contributing](CONTRIBUTING.md)

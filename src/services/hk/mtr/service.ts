@@ -1,8 +1,17 @@
 import axios from 'axios';
-import { MTR_LINES, MTR_STATIONS } from './constants.js';
-import { MTRScheduleResponse, MTRTrainInfo } from './types.js';
+import { MTR_LINES, MTR_STATIONS, STATIONS_WITHOUT_REALTIME } from './constants.js';
+import { MTRScheduleResponse, MTRTrainInfo, RouteLeg } from './types.js';
+import { planRoute } from './planner.js';
 
 const API_BASE_URL = 'https://rt.data.gov.hk/v1/transport/mtr/getSchedule.php';
+
+type ArrivalResult =
+    | { trains: MTRTrainInfo[] }
+    | { unavailable: string };
+
+const stationName = (code: string): string => MTR_STATIONS[code]?.name.en ?? code;
+const lineName = (code: string): string => MTR_LINES[code]?.name.en ?? code;
+const plural = (count: number, noun: string): string => `${count} ${noun}${count === 1 ? '' : 's'}`;
 
 export class MTRService {
     /**
@@ -23,35 +32,46 @@ export class MTRService {
     }
 
     /**
-     * Find the line connecting two stations and the direction
+     * Real-time arrivals for one boarding station, in one direction.
+     * Never throws: an unavailable upstream is reported, not hidden.
      */
-    static findRoute(fromCode: string, toCode: string): { line: string; direction: 'UP' | 'DOWN' } | null {
-        for (const [lineCode, line] of Object.entries(MTR_LINES)) {
-            const fromIndex = line.stations.indexOf(fromCode);
-            const toIndex = line.stations.indexOf(toCode);
-
-            if (fromIndex !== -1 && toIndex !== -1) {
-                // Found both stations on this line
-                // UP is increasing index (e.g. KET -> CHW)
-                // DOWN is decreasing index (e.g. CHW -> KET)
-
-                // ISL: KET(0) -> ... -> CHW(16). UP is towards CHW.
-                // TWL: CEN(0) -> ... -> TSW(15). UP is towards TSW.
-
-                // Wait, for ISL, UP is towards Chai Wan (CHW).
-                // Let's verify with my constants.
-                // ISL stations: KET, ..., CHW.
-                // If fromIndex < toIndex, moving towards end of array (CHW). So UP.
-
-                const direction = fromIndex < toIndex ? 'UP' : 'DOWN';
-                return { line: lineCode, direction };
-            }
+    static async fetchArrivals(leg: RouteLeg): Promise<ArrivalResult> {
+        if (STATIONS_WITHOUT_REALTIME.has(leg.from)) {
+            return { unavailable: `MTR does not publish real-time arrivals for ${stationName(leg.from)}.` };
         }
-        return null;
+
+        try {
+            const response = await axios.get<MTRScheduleResponse>(API_BASE_URL, {
+                params: { line: leg.line, sta: leg.from },
+            });
+
+            const data = response.data;
+            if (data.status !== 1) {
+                return { unavailable: `MTR API returned an error: ${data.message || 'unknown'}.` };
+            }
+
+            const stationData = data.data?.[`${leg.line}-${leg.from}`];
+            if (!stationData) {
+                return { unavailable: `MTR API returned no data for ${leg.line} at ${stationName(leg.from)}.` };
+            }
+
+            const trains = leg.direction === 'UP' ? stationData.UP : stationData.DOWN;
+            if (!trains || trains.length === 0) {
+                return { unavailable: `No upcoming ${leg.direction} trains reported at ${stationName(leg.from)}.` };
+            }
+
+            return { trains };
+        } catch (error) {
+            console.error('MTR API Error:', error);
+            return { unavailable: 'Failed to reach the MTR API.' };
+        }
     }
 
     /**
-     * Get next trains
+     * Plan a journey and attach real-time arrivals for the boarding leg.
+     *
+     * Routes minimise transfers, not travel time — we have no inter-station
+     * running times, so claiming "fastest" would be a guess.
      */
     static async getNextTrains(from: string, to: string): Promise<string> {
         const fromCode = this.findStationCode(from);
@@ -65,59 +85,80 @@ export class MTRService {
             return 'Start and end stations are the same.';
         }
 
-        const route = this.findRoute(fromCode, toCode);
-        if (!route) {
-            return `No direct line found between ${from} and ${to}. Please try a transfer or check station names. (Currently supporting Island Line and Tsuen Wan Line)`;
+        const legs = planRoute(fromCode, toCode);
+        if (!legs || legs.length === 0) {
+            return `No route found between ${stationName(fromCode)} and ${stationName(toCode)}.`;
         }
 
-        try {
-            const response = await axios.get<MTRScheduleResponse>(API_BASE_URL, {
-                params: {
-                    line: route.line,
-                    sta: fromCode,
-                },
-            });
+        const arrivals = await this.fetchArrivals(legs[0]);
 
-            const data = response.data;
-            if (data.status !== 1) {
-                return 'MTR API returned an error or is unavailable.';
-            }
+        return legs.length === 1
+            ? this.formatDirect(legs[0], arrivals)
+            : this.formatJourney(fromCode, toCode, legs, arrivals);
+    }
 
-            const stationData = data.data[`${route.line}-${fromCode}`];
-            if (!stationData) {
-                return `No real-time data available for ${route.line} at ${fromCode}.`;
-            }
+    private static describeLeg(leg: RouteLeg): string {
+        const towards = leg.termini.map(stationName).join(' / ');
+        return `${lineName(leg.line)} from ${stationName(leg.from)} to ${stationName(leg.to)} ` +
+            `(towards ${towards}), ${plural(leg.stops, 'stop')}`;
+    }
 
-            const trains = route.direction === 'UP' ? stationData.UP : stationData.DOWN;
-
-            if (!trains || trains.length === 0) {
-                return `No upcoming trains found from ${from} to ${to} (${route.line}).`;
-            }
-
-            // Format output
-            const lineName = MTR_LINES[route.line].name.en;
-            const destName = route.direction === 'UP'
-                ? MTR_STATIONS[MTR_LINES[route.line].upDest].name.en
-                : MTR_STATIONS[MTR_LINES[route.line].downDest].name.en;
-
-            const nextTrain = trains[0];
-            const subsequentTrains = trains.slice(1, 3);
-
-            let result = `Next ${lineName} train from ${MTR_STATIONS[fromCode].name.en} to ${MTR_STATIONS[toCode].name.en} (towards ${destName}):\n`;
-            result += `- Arriving in: ${nextTrain.ttnt} min(s) (${nextTrain.time.split(' ')[1]})\n`;
-
-            if (subsequentTrains.length > 0) {
-                result += `Subsequent trains:\n`;
-                subsequentTrains.forEach(t => {
-                    result += `- ${t.ttnt} min(s) (${t.time.split(' ')[1]})\n`;
-                });
-            }
-
-            return result;
-
-        } catch (error) {
-            console.error('MTR API Error:', error);
-            return 'Failed to fetch MTR data. Please try again later.';
+    private static formatArrivals(arrivals: ArrivalResult, indent: string): string {
+        if ('unavailable' in arrivals) {
+            return `${indent}Real-time arrivals unavailable: ${arrivals.unavailable}\n`;
         }
+
+        const [next, ...rest] = arrivals.trains;
+        let text = `${indent}- Arriving in: ${next.ttnt} min(s) (${next.time.split(' ')[1]})\n`;
+
+        const subsequent = rest.slice(0, 2);
+        if (subsequent.length > 0) {
+            text += `${indent}Subsequent trains:\n`;
+            for (const train of subsequent) {
+                text += `${indent}- ${train.ttnt} min(s) (${train.time.split(' ')[1]})\n`;
+            }
+        }
+
+        return text;
+    }
+
+    private static formatDirect(leg: RouteLeg, arrivals: ArrivalResult): string {
+        const towards = leg.termini.map(stationName).join(' / ');
+
+        if ('unavailable' in arrivals) {
+            return `${this.describeLeg(leg)}.\n` +
+                `Real-time arrivals unavailable: ${arrivals.unavailable}\n`;
+        }
+
+        const header = `Next ${lineName(leg.line)} train from ${stationName(leg.from)} ` +
+            `to ${stationName(leg.to)} (towards ${towards}):\n`;
+
+        return header + this.formatArrivals(arrivals, '');
+    }
+
+    private static formatJourney(
+        fromCode: string,
+        toCode: string,
+        legs: RouteLeg[],
+        arrivals: ArrivalResult,
+    ): string {
+        const transfers = legs.length - 1;
+        const stops = legs.reduce((total, leg) => total + leg.stops, 0);
+
+        let text = `${stationName(fromCode)} to ${stationName(toCode)} — ` +
+            `${plural(transfers, 'transfer')}, ${plural(stops, 'stop')}.\n` +
+            `Route minimises transfers, not travel time.\n\n`;
+
+        legs.forEach((leg, index) => {
+            text += `Leg ${index + 1}: ${this.describeLeg(leg)}\n`;
+            if (index === 0) {
+                text += this.formatArrivals(arrivals, '  ');
+            } else {
+                text += `  Transfer at ${stationName(leg.from)}.\n`;
+            }
+        });
+
+        text += `\nReal-time arrivals are shown for the boarding leg only.\n`;
+        return text;
     }
 }

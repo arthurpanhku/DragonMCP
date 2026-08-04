@@ -23,17 +23,19 @@ describe('MCP stdio transport', () => {
             await client.connect(transport);
 
             const { tools } = await client.listTools();
-            expect(tools.some(({ name }) => name === 'taobao_search_product')).toBe(true);
+            expect(tools.some(({ name }) => name === 'search_mtr_schedule')).toBe(true);
 
+            // An unknown station fails during local lookup, so this exercises the
+            // transport end to end without touching the network.
             const result = CallToolResultSchema.parse(await client.callTool({
-                name: 'taobao_search_product',
-                arguments: { keyword: 'MCP' },
+                name: 'search_mtr_schedule',
+                arguments: { from: 'Atlantis', to: 'Central' },
             }));
             const textContent = result.content.find((item) => item.type === 'text');
 
             expect(textContent).toMatchObject({
                 type: 'text',
-                text: expect.stringContaining('Taobao Results'),
+                text: expect.stringContaining('Station not found: Atlantis'),
             });
         } finally {
             await client.close();

@@ -46,13 +46,6 @@ describe('MTRService', () => {
         expect(MTRService.findStationCode('unknown')).toBeNull();
     });
 
-    it('should find route and direction correctly', () => {
-        // Admiralty to Central (ISL) -> DOWN (towards KET)
-        const route = MTRService.findRoute('ADM', 'CEN');
-        // ISL is defined first in constants, so it should be picked first
-        expect(route).toEqual({ line: 'ISL', direction: 'DOWN' });
-    });
-
     it('should fetch next trains correctly', async () => {
         const result = await MTRService.getNextTrains('Admiralty', 'Central');
 
@@ -64,5 +57,32 @@ describe('MTRService', () => {
         expect(result).toContain('3 min(s)');
 
         expect(axiosGetSpy).toHaveBeenCalled();
+    });
+
+    it('should describe each leg of a journey that needs a transfer', async () => {
+        const result = await MTRService.getNextTrains('Central', 'Sha Tin');
+
+        expect(result).toContain('Central to Sha Tin');
+        expect(result).toContain('1 transfer');
+        expect(result).toContain('Leg 1:');
+        expect(result).toContain('Leg 2:');
+        expect(result).toContain('East Rail Line');
+        expect(result).toContain('minimises transfers, not travel time');
+        // Real-time is only meaningful where we know the rider is standing.
+        expect(result).toContain('boarding leg only');
+    });
+
+    it('should still return the route when real-time data is unavailable', async () => {
+        // Prince Edward is a real station the Next Train API does not serve.
+        const result = await MTRService.getNextTrains('Prince Edward', 'Mong Kok');
+
+        expect(result).toContain('Prince Edward');
+        expect(result).toContain('Mong Kok');
+        expect(result).toContain('Real-time arrivals unavailable');
+        expect(axiosGetSpy).not.toHaveBeenCalled();
+    });
+
+    it('should report unknown stations rather than guessing', async () => {
+        expect(await MTRService.getNextTrains('Atlantis', 'Central')).toContain('Station not found: Atlantis');
     });
 });

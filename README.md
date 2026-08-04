@@ -3,277 +3,211 @@
 
   # DragonMCP
 
-  **The Neural Center for Chinese Local Life Agents**
+  **Hong Kong & cross-border open data for AI Agents**
 
-  [English](README.md) | [简体中文](README_zh-CN.md) | [日本語](README_ja.md) | [한국어](README_ko.md) | [Français](README_fr.md) | [Deutsch](README_de.md)
+  [English](README.md) | [简体中文](README_zh-CN.md)
 
-  Let Claude / DeepSeek / Qwen directly order your takeout, hail a Didi, check high-speed rail tickets, and pay utility bills.
+  Live MTR arrivals, HK Observatory weather, and Mainland China routing — over the Model Context Protocol.
 
-  [Architecture](#-architecture) • [Contributing Guide](CONTRIBUTING.md)
+  [Quickstart](#-quickstart) • [Tools](#-tools) • [Limitations](#-limitations) • [Roadmap](#-roadmap)
 
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-  [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)](https://www.typescriptlang.org/)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue.svg)](https://www.typescriptlang.org/)
   [![MCP](https://img.shields.io/badge/Protocol-MCP-green.svg)](https://modelcontextprotocol.io/)
   [![Node.js](https://img.shields.io/badge/Node.js-18%2B-green.svg)](https://nodejs.org/)
-  [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/arthurpanhku/DragonMCP/pulls)
 </div>
 
 ---
 
 ## 🌟 What is DragonMCP?
 
-DragonMCP is a Model Context Protocol (MCP) server designed to bridge the gap between AI Agents and local life services in **Greater China (Mainland China, Hong Kong) and Asia**.
+An MCP server that gives AI agents **real, verifiable public data** for Hong Kong and the Mainland China border region.
 
-It aims to solve the "last mile" problem between AI Agents and real-world services.
+**Every tool in this server calls a live API. There are no mocks.** If an upstream source is down, the tool says so — it never invents a plausible-looking answer. You can verify this yourself at any time with the built-in `system_run_selftest` tool, which pings every upstream and reports what is actually reachable.
 
----
-
-## 🔥 Live Demo: MTR Real-time Schedule
-
-We have implemented the **MTR (Mass Transit Railway) Query Tool** as our first MVP. AI Agents can now fetch real-time train schedules directly from MTR's Open API.
-
-**Scenario**:
-> User: "When is the next train from Admiralty to Central?"
-
-**Agent Response**:
-> "Next Island Line train from Admiralty to Central (towards Kennedy Town):
-> - Arriving in: 2 min(s) (10:30:00)
-> - Subsequent trains: 5 min(s) (10:33:00)"
-
-*(Try it yourself by connecting DragonMCP to your MCP client!)*
+Why this niche: Hong Kong's public data is genuinely open (`data.gov.hk`, no keys, no rate-limit paperwork) but scattered across agencies with inconsistent formats. And cross-border trips — where a single journey spans MTR, the Mainland rail network, and two different weather authorities — are exactly the case no single agency has any incentive to serve.
 
 ---
 
-## 🛠️ Supported Services (Beta)
+## 🔥 Live example
 
-We are actively expanding our support for local services. Below are the currently integrated interfaces (some are mocks/placeholders for development):
+**MTR real-time arrivals** — no API key required:
 
-| Region             | Category      | Service              | Tool Name                | Description                                      | Status |
-| :----------------- | :------------ | :------------------- | :----------------------- | :----------------------------------------------- | :----- |
-| **Greater China**  | **Travel**    | **MTR (HK)**         | `search_mtr_schedule`    | Real-time train schedule (Island/Tsuen Wan Line) | ✅ Live |
-|                    |               | **Amap (Gaode)**     | `amap_search_poi`        | Search for POIs (Restaurants, Hotels, etc.)      | ✅ Live |
-|                    |               | **Amap (Gaode)**     | `amap_walking_direction` | Walking route planning                           | ✅ Live |
-|                    |               | **Amap (Gaode)**     | `amap_driving_direction` | Driving route planning (Fastest)                 | ✅ Live |
-|                    |               | **Amap (Gaode)**     | `amap_transit_direction` | Public transit route planning (Integrated)       | ✅ Live |
-|                    | **Weather**   | **HK Observatory**   | `hk_weather_current`     | Current weather report in Hong Kong              | ✅ Live |
-|                    | **Travel**    | **Didi**             | `book_taxi_didi`         | Estimate price and book a ride                   | 🚧 Mock |
-|                    | **Payment**   | **WeChat Pay**       | `wechat_pay_create`      | Create payment order                             | 🚧 Mock |
-|                    |               | **Alipay**           | `alipay_pay_create`      | Create payment order                             | 🚧 Mock |
-|                    | **Lifestyle** | **Meituan**          | `meituan_search_food`    | Search for food delivery                         | 🚧 Mock |
-|                    | **Shopping**  | **Taobao**           | `taobao_search_product`  | Search for products                              | 🚧 Mock |
-| **Asia Expansion** | **Travel**    | **Grab (SG/SEA)**    | `book_ride_grab`         | Estimate and book a ride                         | 🚧 Mock |
-|                    |               | **Naver Maps (KR)**  | `naver_map_search`       | Search for places in Korea                       | 🚧 Mock |
-|                    | **Payment**   | **LINE Pay (JP/TW)** | `line_pay_request`       | Request a payment                                | 🚧 Mock |
+```
+> When is the next train from Admiralty to Central?
+
+Next Island Line train from Admiralty to Central (towards Kennedy Town):
+- Arriving in: 0 min(s) (14:02:27)
+Subsequent trains:
+- 4 min(s) (14:06:27)
+- 7 min(s) (14:09:27)
+```
+
+**Hong Kong Observatory** — no API key required, includes active warnings:
+
+```
+> What's the weather in Hong Kong?
+
+Current Weather in Hong Kong (Updated: 2026-08-04T13:02:00+08:00):
+- Temperature: 30°C
+- Humidity: 75%
+- UV Index: 8 (very high)
+
+Warnings:
+The Thunderstorm Warning has been issued. It will remain effective until
+3:00 p.m. today. Isolated thunderstorms are expected to occur over New
+Territories West.
+```
 
 ---
 
-## ⚠️ Security & Disclaimer
+## 🛠️ Tools
 
-> **IMPORTANT**: This project includes Mock implementations for sensitive services like payments (WeChat Pay, Alipay) and ride-hailing (Didi).
+| Tool | Source | API key | What it does |
+| :--- | :--- | :--- | :--- |
+| `search_mtr_schedule` | MTR via data.gov.hk | — | Journey planning **with transfers** + real-time arrivals; all 10 lines, all 98 stations |
+| `hk_weather_current` | HK Observatory | — | Current conditions + active warnings |
+| `search_transit_route` | MTR / Amap | CN only | Unified HK/CN routing; picks the right provider |
+| `system_run_selftest` | all of the above | — | Live reachability check of every upstream |
+| `amap_search_poi` | Amap (Gaode) | ✅ | POI search in Mainland China |
+| `amap_walking_direction` | Amap (Gaode) | ✅ | Walking route |
+| `amap_driving_direction` | Amap (Gaode) | ✅ | Driving route |
+| `amap_transit_direction` | Amap (Gaode) | ✅ | Public transit route |
+| `amap_bicycling_direction` | Amap (Gaode) | ✅ | Cycling route |
 
-*   **Do NOT** use real financial data or personal credentials in the current version.
-*   The payment tools (`wechat_pay_create`, `alipay_pay_create`) currently return **fake data** for demonstration purposes only. No actual money is transferred.
-*   When integrating real APIs in the future, ensure you follow strict security protocols (OAuth, HTTPS, Token Management).
+**MTR coverage** — all 10 lines, station names accepted in English or Chinese:
+
+Island (港岛线) · Tsuen Wan (荃湾线) · Kwun Tong (观塘线) · Tseung Kwan O (将军澳线) · **East Rail (东铁线, runs to Lo Wu 罗湖 and Lok Ma Chau 落马洲)** · Tuen Ma (屯马线) · South Island (南港岛线) · Tung Chung (东涌线) · Airport Express (机场快线) · Disneyland Resort (迪士尼线)
+
+---
+
+## ⚠️ Limitations
+
+Stated up front, because a tool that hides its limits is a tool that lies to your agent:
+
+- **Routes minimise transfers, not travel time.** No inter-station running times are published, so we optimise for the thing we can actually measure. Occasionally a two-transfer route is faster than the one-transfer route returned.
+- **Real-time arrivals cover the boarding leg only.** Without running times we cannot say when you will reach a transfer station, so quoting arrivals for later legs would be invention.
+- **Two stations have no real-time feed.** The upstream API serves no arrivals for Tin Hau or Prince Edward. Routing through them works; arrivals at them are reported as unavailable rather than faked.
+- **Amap tools need your own key** and cover Mainland China only.
+- **Cross-border journey planning is not built yet.** East Rail reaches the border stations, but stitching a full HK→Shenzhen itinerary is Stage 2 on the roadmap.
+
+---
+
+## 🚀 Quickstart
+
+**Prerequisites:** Node.js >= 18
+
+```bash
+git clone https://github.com/arthurpanhku/DragonMCP.git
+cd DragonMCP
+npm install
+npm run build
+```
+
+No `.env` is needed for the Hong Kong tools. For the Amap tools, copy the template and add your key:
+
+```bash
+cp .env.example .env
+```
+
+### Connect to Claude Desktop
+
+Add to `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "DragonMCP": {
+      "command": "node",
+      "args": ["/absolute/path/to/DragonMCP/dist/stdio.js"]
+    }
+  }
+}
+```
+
+Add `"env": { "AMAP_API_KEY": "your_key" }` only if you want the Mainland China tools.
+
+### Other ways to run
+
+```bash
+npm run dev:stdio   # stdio transport, for local MCP clients
+npm run dev         # HTTP server: Streamable HTTP at /mcp, legacy SSE at /mcp/sse
+docker-compose up -d --build
+```
+
+In stdio mode, stdin/stdout carry MCP JSON-RPC; diagnostics go to stderr so the protocol stream stays clean.
 
 ---
 
 ## 🏗️ Architecture
 
-DragonMCP acts as a middleware between AI Agents and various local service APIs.
-
 ```mermaid
 graph TD
-    A[AI Agent Client] -->|MCP Protocol| B[DragonMCP Server]
-    B --> C[Service Router]
-    
-    subgraph "Greater China Services"
-        C --> D["Payment (WeChat/Alipay)"]
-        C --> E["Travel (MTR/Amap/Didi)"]
-        C --> F["Lifestyle (Meituan/Taobao)"]
-    end
+    A[AI Agent Client] -->|MCP: stdio or HTTP| B[DragonMCP Server]
+    B --> C[Tool Registry]
 
-    subgraph "Asia Expansion Services"
-        C --> G["Travel (Grab/Naver)"]
-        C --> H["Payment (LINE Pay/PayNow)"]
-        C --> I["Lifestyle (Rakuten/Kakao)"]
-    end
-    
-    subgraph "External APIs"
-        D -.-> J[WeChat/Alipay API]
-        E -.-> K[MTR/Amap API]
-        G -.-> L[Grab/Naver API]
-        H -.-> M[LINE Pay API]
-    end
+    C --> D["Hong Kong (no key)"]
+    C --> E["Mainland China (Amap key)"]
+    C --> F["Cross-border aggregator"]
+
+    D -.-> G[data.gov.hk: MTR real-time]
+    D -.-> H[HK Observatory]
+    E -.-> I[Amap Web Service API]
+    F -.-> D
+    F -.-> E
 ```
-
-Architecture details are documented in this README and will be expanded in repo docs over time.
 
 ---
 
-## 🗺️ Roadmap & Features
+## 🗺️ Roadmap
 
-### Phase 1: MVP (Current)
-- [x] **Core Framework**: Express + MCP SDK + TypeScript setup.
-- [x] **Travel (MTR)**: Real-time schedule query for Island Line & Tsuen Wan Line.
-- [x] **Travel (Amap)**: POI search and walking directions.
-- [x] **Service Mocks**: Basic structure for WeChat/Alipay/Didi/Meituan/Taobao.
-- [ ] **Food Delivery (Demo)**: Simulate ordering process (Search Shop -> Menu -> Cart).
-- [ ] **Basic Config**: Environment variables & project structure.
+**Stage 1 — Provenance & zero-config**
+- [ ] Every tool response carries `source`, `fetched_at`, `freshness`
+- [ ] Publish to npm so `npx dragon-mcp` works with no clone and no key
+- [ ] Daily CI self-test with a status badge, so "the data sources are alive today" is publicly verifiable
 
-### Phase 2: Asia Expansion (New!)
-- [x] **Structure Setup**: Service directories for Singapore (Grab), Japan (LINE), Korea (Naver).
-- [x] **Initial Mocks**: Grab ride booking, LINE Pay request, Naver Map search.
-- [ ] **Real API Integration**: Replace mocks with real APIs (Grab Developer, LINE Pay API).
-- [ ] **More Services**: Kakao Pay (KR), Yahoo! Transit (JP), EZ-Link (SG).
+**Stage 2 — Cross-border**
+- [ ] MTR transfer planning
+- [ ] Border checkpoints, Guangzhou–Shenzhen–Hong Kong Express Rail, Airport Express integration
+- [ ] `plan_cross_border_trip`: one call spanning both sides of the boundary
 
-### Phase 3: Ecosystem
-- [ ] **Plugin System**: Allow community to contribute individual service tools.
-- [ ] **User Auth**: Secure user token management for personal services.
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-*   Node.js >= 18
-*   npm or yarn
-
-### Installation
-
-1.  Clone the repository:
-    ```bash
-    git clone https://github.com/arthurpanhku/DragonMCP.git
-    cd DragonMCP
-    ```
-
-2.  Install dependencies:
-    ```bash
-    npm install
-    ```
-
-3.  Configure environment variables:
-    ```bash
-    cp .env.example .env
-    # Edit .env (AMAP_API_KEY required for map services)
-    ```
-
-   Minimum recommended variables:
-   - `AMAP_API_KEY`: required for Amap search and routing tools.
-   - `JWT_SECRET` and `ENCRYPTION_KEY`: required when `NODE_ENV=production`.
-
-### Running the Server
-
-Start the development HTTP server (Streamable HTTP at `/mcp`, with legacy SSE at `/mcp/sse`):
-
-```bash
-npm run dev
-```
-
-For a local MCP client that launches the server as a subprocess, use the stdio transport instead:
-
-```bash
-npm run dev:stdio
-
-# Or run the compiled entry point
-npm run build
-npm run start:stdio
-```
-
-In stdio mode, stdin and stdout carry MCP JSON-RPC messages. Diagnostic logs are written to stderr so they do not corrupt the protocol stream.
-
-### Running with Docker
-
-1.  Build and start the container:
-    ```bash
-    docker-compose up -d --build
-    ```
-
-2.  View logs:
-    ```bash
-    docker-compose logs -f
-    ```
-
-3.  Stop the server:
-    ```bash
-    docker-compose down
-    ```
-
-### Connect to Claude Desktop
-
-1.  Build the project:
-    ```bash
-    npm run build
-    ```
-
-2.  Add the following to your `claude_desktop_config.json`:
-
-    ```json
-    {
-      "mcpServers": {
-        "DragonMCP": {
-          "command": "node",
-          "args": ["/path/to/DragonMCP/dist/stdio.js"],
-          "env": {
-            "AMAP_API_KEY": "your_amap_api_key_here"
-          }
-        }
-      }
-    }
-    ```
-    *(Note: Replace `/path/to/DragonMCP` with your actual absolute path. If you set `NODE_ENV=production`, also provide the required `JWT_SECRET` and `ENCRYPTION_KEY`.)*
-
----
-
-## ❓ FAQ & Troubleshooting
-
-### Q: Why do I get "Station not found" for MTR query?
-A: Currently, only **Island Line** and **Tsuen Wan Line** are supported. Please check if the station name is spelled correctly (e.g., "Admiralty", "Central", "Mong Kok").
-
-### Q: How do I get an Amap (Gaode) API Key?
-A: You need to register at the [Amap Open Platform](https://lbs.amap.com/), create a "Web Service" application, and copy the Key to your `.env` file as `AMAP_API_KEY`.
-
-### Q: Can I use this for real payments?
-A: **No.** The current payment tools are mocks. Do not use them for real transactions.
+**Stage 3 — Coverage**
+- [ ] More `data.gov.hk` sources (bus/ferry ETAs, typhoon signals, air quality)
+- [ ] Macau
 
 ---
 
 ## 🧪 Testing
 
-Run unit and integration tests:
-
 ```bash
-npm test
+npm test          # unit + integration; hermetic, no network required
+npm run check     # typecheck
+npm run lint
 ```
 
-If your local Node/Jest setup requires ESM flags, you can run:
-
-```bash
-NODE_OPTIONS="$NODE_OPTIONS --experimental-vm-modules" npm test
-```
+To verify live upstreams instead, call the `system_run_selftest` tool from any MCP client.
 
 ---
 
 ## 🤝 Contributing
 
-We welcome all contributions! Whether you are a developer, designer, or product thinker.
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
-### We need help with:
-1.  **Playwright Scripts**: Simulating food delivery apps (Meituan/Ele.me) web flows.
-2.  **More MTR Lines**: Adding station data for East Rail Line, Tuen Ma Line, etc.
-3.  **Real API Integration**: Replacing mocks with real APIs for WeChat/Alipay/Didi.
+**One hard rule: no mock tools.** A tool that returns fabricated data is worse than a missing tool, because the agent cannot tell the difference. If an upstream API isn't available, the right move is not to register the tool.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+Good places to start: MTR transfer planning, additional `data.gov.hk` sources, branch handling for East Rail and Tseung Kwan O.
 
 ---
 
 ## 🙏 Acknowledgments
 
-*   **Anthropic**: For creating the Model Context Protocol (MCP).
-*   **MTR Corporation**: For providing the Open Data API.
-*   **Amap (Gaode)**: For the map and POI services.
+*   **Anthropic** — for the Model Context Protocol
+*   **MTR Corporation** and **data.gov.hk** — for the open real-time transit API
+*   **Hong Kong Observatory** — for the open weather API
+*   **Amap (Gaode)** — for maps and routing
 
 ---
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT — see [LICENSE](LICENSE).

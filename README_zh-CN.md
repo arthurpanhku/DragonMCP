@@ -3,261 +3,211 @@
 
   # DragonMCP
 
-  **中文生活 Agent 的神经中枢**
+  **面向 AI Agent 的香港与跨境开放数据服务**
 
-  [English](README.md) | [简体中文](README_zh-CN.md) | [日本語](README_ja.md) | [한국어](README_ko.md) | [Français](README_fr.md) | [Deutsch](README_de.md)
+  [English](README.md) | [简体中文](README_zh-CN.md)
 
-  让 Claude / DeepSeek / Qwen 直接帮你点外卖、叫滴滴、查高铁余票、缴水电费。
+  港铁实时到站、香港天文台天气、内地路径规划 —— 通过 Model Context Protocol 提供。
 
-  [产品需求文档 (PRD)](.trae/documents/dragon_mcp_prd.md) • [技术架构](.trae/documents/dragon_mcp_technical_architecture.md) • [贡献指南](#-contributing--贡献指南)
+  [快速开始](#-快速开始) • [工具列表](#️-工具列表) • [已知限制](#️-已知限制) • [路线图](#️-路线图)
 
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-  [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)](https://www.typescriptlang.org/)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue.svg)](https://www.typescriptlang.org/)
   [![MCP](https://img.shields.io/badge/Protocol-MCP-green.svg)](https://modelcontextprotocol.io/)
   [![Node.js](https://img.shields.io/badge/Node.js-18%2B-green.svg)](https://nodejs.org/)
-  [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/arthurpanhku/DragonMCP/pulls)
 </div>
 
 ---
 
-## 🌟 项目简介
+## 🌟 这是什么？
 
-DragonMCP 是一个专为 AI Agent 设计的 Model Context Protocol (MCP) 服务器，旨在打通 AI Agent 与**大中华区（中国内地、香港）及亚洲地区**本地生活服务之间的最后一公里。
+一个 MCP 服务器，为 AI Agent 提供香港及内地—香港边境地区**真实、可验证的公共数据**。
 
----
+**本项目所有工具都调用真实 API，没有任何 mock。** 上游不可用时，工具会明确报错，而不会编造一个看起来合理的答案。你可以随时用内置的 `system_run_selftest` 工具自行验证——它会实时探测每一个上游数据源，并报告哪些真正可达。
 
-## 🔥 实战演示：港铁实时班次
-
-作为第一个 MVP（最小可行性产品），我们已经实现了**港铁（MTR）实时查询工具**。AI Agent 现在可以直接调用港铁开放 API 获取实时列车班次。
-
-**场景**:
-> 用户：“从金钟到中环的下一班车还有多久？”
-
-**Agent 回复**:
-> "Next Island Line train from Admiralty to Central (towards Kennedy Town):
-> - Arriving in: 2 min(s) (10:30:00)
-> - Subsequent trains: 5 min(s) (10:33:00)"
-
-*(快连接 DragonMCP 亲自试一试吧！)*
+为什么选这个切口：香港的公共数据是真开放的（`data.gov.hk`，无需密钥、无需申请流程），但散落在各个部门、格式互不统一。而跨境行程——一趟行程同时涉及港铁、内地铁路网和两地不同的气象机构——恰恰是任何单一机构都没有动力去服务的场景。
 
 ---
 
-## 🛠️ 支持的服务 (Beta)
+## 🔥 实时示例
 
-我们正在积极拓展本地生活服务的支持。以下是目前已集成的接口（部分为开发用的 Mock/占位符）：
+**港铁实时到站** —— 无需 API Key：
 
-| 区域         | 分类     | 服务商                | 工具名称                 | 描述                           | 状态     |
-| :----------- | :------- | :-------------------- | :----------------------- | :----------------------------- | :------- |
-| **大中华区** | **出行** | **港铁 (MTR)**        | `search_mtr_schedule`    | 实时列车时刻表 (港岛线/荃湾线) | ✅ 已上线 |
-|              |          | **高德地图**          | `amap_search_poi`        | 搜索 POI (餐厅、酒店等)        | ✅ 已上线 |
-|              |          | **高德地图**          | `amap_walking_direction` | 步行路径规划                   | ✅ 已上线 |
-|              |          | **高德地图**          | `amap_driving_direction` | 驾车路径规划 (最快)            | ✅ 已上线 |
-|              |          | **高德地图**          | `amap_transit_direction` | 公交路径规划 (综合)            | ✅ 已上线 |
-|              | **气象** | **香港天文台**        | `hk_weather_current`     | 香港实时天气报告               | ✅ 已上线 |
-|              | **出行** | **滴滴出行**          | `book_taxi_didi`         | 预估价格并叫车                 | 🚧 模拟中 |
-|              | **支付** | **微信支付**          | `wechat_pay_create`      | 创建支付订单                   | 🚧 模拟中 |
-|              |          | **支付宝**            | `alipay_pay_create`      | 创建支付订单                   | 🚧 模拟中 |
-|              | **生活** | **美团**              | `meituan_search_food`    | 搜索外卖美食                   | 🚧 模拟中 |
-|              | **购物** | **淘宝**              | `taobao_search_product`  | 搜索商品                       | 🚧 模拟中 |
-| **亚洲扩展** | **出行** | **Grab (新马泰)**     | `book_ride_grab`         | 预估价格并叫车                 | 🚧 模拟中 |
-|              |          | **Naver Maps (韩国)** | `naver_map_search`       | 搜索韩国地点                   | 🚧 模拟中 |
-|              | **支付** | **LINE Pay (日台泰)** | `line_pay_request`       | 发起支付请求                   | 🚧 模拟中 |
+```
+> 金钟到中环下一班车什么时候？
 
----
-
-## ⚠️ 安全与免责声明
-
-> **重要提示**: 本项目包含支付（微信、支付宝）和打车（滴滴）等敏感服务的 Mock 实现。
-
-*   **请勿** 在当前版本中使用真实的财务数据或个人凭证。
-*   支付工具 (`wechat_pay_create`, `alipay_pay_create`) 目前仅返回用于演示的 **虚假数据**。不会发生真实的资金转账。
-*   未来集成真实 API 时，请务必遵守严格的安全协议（OAuth, HTTPS, Token 管理）。
-
----
-
-## 🏗️ 架构设计
-
-DragonMCP 作为 AI Agent 与各类本地服务 API 之间的中间件。
-
-```mermaid
-graph TD
-    A[AI Agent Client] -->|MCP Protocol| B[DragonMCP Server]
-    B --> C[Service Router]
-    
-    subgraph "Greater China Services"
-        C --> D["Payment (WeChat/Alipay)"]
-        C --> E["Travel (MTR/Amap/Didi)"]
-        C --> F["Lifestyle (Meituan/Taobao)"]
-    end
-
-    subgraph "Asia Expansion Services"
-        C --> G["Travel (Grab/Naver)"]
-        C --> H["Payment (LINE Pay/PayNow)"]
-        C --> I["Lifestyle (Rakuten/Kakao)"]
-    end
-    
-    subgraph "External APIs"
-        D -.-> J[WeChat/Alipay API]
-        E -.-> K[MTR/Amap API]
-        G -.-> L[Grab/Naver API]
-        H -.-> M[LINE Pay API]
-    end
+Next Island Line train from Admiralty to Central (towards Kennedy Town):
+- Arriving in: 0 min(s) (14:02:27)
+Subsequent trains:
+- 4 min(s) (14:06:27)
+- 7 min(s) (14:09:27)
 ```
 
-更多详情请参阅 [技术架构文档](.trae/documents/dragon_mcp_technical_architecture.md)。
+**香港天文台** —— 无需 API Key，包含生效中的警告：
+
+```
+> 香港现在天气怎么样？
+
+Current Weather in Hong Kong (Updated: 2026-08-04T13:02:00+08:00):
+- Temperature: 30°C
+- Humidity: 75%
+- UV Index: 8 (very high)
+
+Warnings:
+The Thunderstorm Warning has been issued. It will remain effective until
+3:00 p.m. today. Isolated thunderstorms are expected to occur over New
+Territories West.
+```
 
 ---
 
-## 🗺️ 路线图与功能
+## 🛠️ 工具列表
 
-### 第一阶段：MVP（进行中）
-- [x] **核心框架**: Express + MCP SDK + TypeScript 配置。
-- [x] **出行 (MTR)**: 港岛线与荃湾线实时班次查询。
-- [x] **出行 (高德)**: POI 搜索与步行导航。
-- [x] **服务模拟**: 微信/支付宝/滴滴/美团/淘宝的基础结构。
-- [ ] **外卖 (Demo)**: 模拟点单流程（搜店 -> 选品 -> 购物车）。
-- [ ] **基础配置**: 环境变量与项目结构。
+| 工具 | 数据源 | 需要 Key | 说明 |
+| :--- | :--- | :--- | :--- |
+| `search_mtr_schedule` | 港铁 via data.gov.hk | 否 | **含换乘的行程规划** + 实时到站；全部 10 条线、98 个站 |
+| `hk_weather_current` | 香港天文台 | 否 | 当前天气 + 生效中的警告 |
+| `search_transit_route` | 港铁 / 高德 | 仅内地需要 | 港/内地统一路径查询，自动选择数据源 |
+| `system_run_selftest` | 以上全部 | 否 | 实时探测所有上游可达性 |
+| `amap_search_poi` | 高德地图 | ✅ | 内地 POI 搜索 |
+| `amap_walking_direction` | 高德地图 | ✅ | 步行路径 |
+| `amap_driving_direction` | 高德地图 | ✅ | 驾车路径 |
+| `amap_transit_direction` | 高德地图 | ✅ | 公共交通路径 |
+| `amap_bicycling_direction` | 高德地图 | ✅ | 骑行路径 |
 
-### 第二阶段：亚洲扩展（新增！）
-- [x] **结构搭建**: 新加坡 (Grab)、日本 (LINE)、韩国 (Naver) 的服务目录。
-- [x] **初步模拟**: Grab 叫车、LINE Pay 支付、Naver 地图搜索的 Mock 实现。
-- [ ] **真实集成**: 用真实 API 替换 Mock（Grab Developer, LINE Pay API）。
-- [ ] **更多服务**: Kakao Pay (韩国)、Yahoo! 换乘案内 (日本)、EZ-Link (新加坡)。
+**港铁覆盖** —— 全部 10 条线，站名支持中英文输入：
 
-### 第三阶段：生态
-- [ ] **插件系统**: 允许社区贡献独立服务工具。
-- [ ] **用户鉴权**: 个人服务的安全令牌管理。
+港岛线 · 荃湾线 · 观塘线 · 将军澳线 · **东铁线（可达罗湖、落马洲口岸）** · 屯马线 · 南港岛线 · 东涌线 · 机场快线 · 迪士尼线
+
+---
+
+## ⚠️ 已知限制
+
+主动写在前面，因为**隐藏限制的工具就是在对 Agent 撒谎**：
+
+- **路线优化的是换乘次数，不是时间。** 港铁没有公开站间行车时间，所以我们只优化能实际测量的量。偶尔会出现两次换乘比返回的一次换乘更快的情况。
+- **实时到站只覆盖上车段。** 没有行车时间就无法推算你何时抵达换乘站，为后续路段报到站时间等于编造。
+- **两个站没有实时数据源。** 上游 API 不提供天后站和太子站的到站信息。经过这两站的路线正常规划，但在这两站查到站时间会明确报告"不可用"，而不是伪造。
+- **高德相关工具需要你自己的 Key**，且只覆盖内地。
+- **完整的跨境行程规划尚未实现。** 东铁线能到口岸站，但把「香港 → 深圳」拼成一条完整行程属于路线图的第二阶段。
 
 ---
 
 ## 🚀 快速开始
 
-### 前置要求
-*   Node.js >= 18
-*   npm 或 yarn
-
-### 安装
-
-1.  克隆仓库:
-    ```bash
-    git clone https://github.com/arthurpanhku/DragonMCP.git
-    cd DragonMCP
-    ```
-
-2.  安装依赖:
-    ```bash
-    npm install
-    ```
-
-3.  配置环境变量:
-    ```bash
-    cp .env.example .env
-    # 编辑 .env (地图服务需要 AMAP_API_KEY)
-    ```
-
-### 运行服务器
-
-启动 HTTP 开发服务器（`/mcp` 使用 Streamable HTTP，`/mcp/sse` 保留兼容旧版 SSE 客户端）：
+**环境要求：** Node.js >= 18
 
 ```bash
-npm run dev
-```
-
-如果 MCP 客户端会把 DragonMCP 作为本地子进程启动，请使用 stdio 传输：
-
-```bash
-npm run dev:stdio
-
-# 或运行编译后的入口
+git clone https://github.com/arthurpanhku/DragonMCP.git
+cd DragonMCP
+npm install
 npm run build
-npm run start:stdio
 ```
 
-stdio 模式通过 stdin/stdout 传输 MCP JSON-RPC 消息；诊断日志统一写入 stderr，避免污染协议数据。
+香港相关工具**无需任何 `.env` 配置**即可使用。如需高德工具，复制模板并填入 Key：
 
-### 使用 Docker 运行
+```bash
+cp .env.example .env
+```
 
-1.  构建并启动容器:
-    ```bash
-    docker-compose up -d --build
-    ```
+### 接入 Claude Desktop
 
-2.  查看日志:
-    ```bash
-    docker-compose logs -f
-    ```
-
-3.  停止服务器:
-    ```bash
-    docker-compose down
-    ```
-
-### 连接到 Claude Desktop
-
-在您的 `claude_desktop_config.json` 中添加以下内容：
+在 `claude_desktop_config.json` 中加入：
 
 ```json
 {
   "mcpServers": {
     "DragonMCP": {
       "command": "node",
-      "args": ["/path/to/DragonMCP/dist/stdio.js"],
-      "env": {
-        "AMAP_API_KEY": "your_amap_api_key_here"
-      }
+      "args": ["/absolute/path/to/DragonMCP/dist/stdio.js"]
     }
   }
 }
 ```
-*(请先运行 `npm run build`，并把路径替换为项目的绝对路径。若设置 `NODE_ENV=production`，还必须提供 `JWT_SECRET` 和 `ENCRYPTION_KEY`。)*
+
+只有在需要内地相关工具时，才需要额外加上 `"env": { "AMAP_API_KEY": "your_key" }`。
+
+### 其他运行方式
+
+```bash
+npm run dev:stdio   # stdio 传输，供本地 MCP 客户端使用
+npm run dev         # HTTP 服务：Streamable HTTP 在 /mcp，兼容 SSE 在 /mcp/sse
+docker-compose up -d --build
+```
+
+stdio 模式下，stdin/stdout 承载 MCP JSON-RPC 消息，诊断日志写入 stderr，不会污染协议流。
 
 ---
 
-## ❓ 常见问题 (FAQ)
+## 🏗️ 架构
 
-### Q: 为什么 MTR 查询显示 "Station not found"？
-A: 目前仅支持 **港岛线** 和 **荃湾线**。请检查站名拼写是否正确（如 "Admiralty", "金钟", "Mong Kok", "旺角"）。
+```mermaid
+graph TD
+    A[AI Agent Client] -->|MCP: stdio or HTTP| B[DragonMCP Server]
+    B --> C[Tool Registry]
 
-### Q: 如何获取高德地图 (Amap) API Key？
-A: 您需要在 [高德开放平台](https://lbs.amap.com/) 注册，创建“Web服务”应用，并将 Key 复制到 `.env` 文件的 `AMAP_API_KEY` 字段中。
+    C --> D["香港 (无需 Key)"]
+    C --> E["内地 (需高德 Key)"]
+    C --> F["跨境聚合层"]
 
-### Q: 我可以用它进行真实支付吗？
-A: **不行。** 目前的支付工具仅为 Mock（模拟）实现。请勿用于真实交易。
+    D -.-> G[data.gov.hk: 港铁实时]
+    D -.-> H[香港天文台]
+    E -.-> I[高德 Web 服务 API]
+    F -.-> D
+    F -.-> E
+```
+
+---
+
+## 🗺️ 路线图
+
+**第一阶段 —— 数据溯源与零配置**
+- [ ] 每个工具的返回值都携带 `source`、`fetched_at`、`freshness`
+- [ ] 发布到 npm，实现 `npx dragon-mcp` 零克隆、零 Key 可用
+- [ ] CI 每日自动跑 self-test 并挂状态徽章，让「数据源今天是活的」可被公开验证
+
+**第二阶段 —— 跨境**
+- [ ] 港铁换乘规划
+- [ ] 口岸、广深港高铁、机场快线整合
+- [ ] `plan_cross_border_trip`：一次调用覆盖边境两侧
+
+**第三阶段 —— 覆盖面**
+- [ ] 更多 `data.gov.hk` 数据源（巴士/渡轮到站、台风信号、空气质量）
+- [ ] 澳门
 
 ---
 
 ## 🧪 测试
 
-运行单元测试和集成测试:
-
 ```bash
-# 开启 Jest 的实验性 VM 模块支持以兼容 ESM
-NODE_OPTIONS="$NODE_OPTIONS --experimental-vm-modules" npm test
+npm test          # 单元 + 集成测试；不依赖网络
+npm run check     # 类型检查
+npm run lint
 ```
+
+如需验证真实上游是否可用，请从任意 MCP 客户端调用 `system_run_selftest` 工具。
 
 ---
 
-## 🤝 贡献指南
+## 🤝 参与贡献
 
-我们热烈欢迎所有贡献！无论你是开发者、设计师还是产品思考者。
+详见 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
-### 我们急需：
-1.  **Playwright 脚本**: 模拟外卖平台（美团/饿了么）网页流程。
-2.  **更多地铁线路**: 补充东铁线、屯马线等站点数据。
-3.  **真实 API 集成**: 替换微信/支付宝/滴滴的 Mock 实现。
+**唯一的硬性规定：不接受 mock 工具。** 返回伪造数据的工具比不存在的工具更糟，因为 Agent 无法分辨真假。如果某个上游 API 拿不到，正确的做法是**不注册这个工具**。
 
-详情请参阅 [CONTRIBUTING.md](CONTRIBUTING.md)（即将推出）。
+推荐的切入点：港铁换乘规划、更多 `data.gov.hk` 数据源、东铁线与将军澳线的分支处理。
 
 ---
 
 ## 🙏 致谢
 
-*   **Anthropic**: 创建了 Model Context Protocol (MCP)。
-*   **MTR Corporation**: 提供了开放数据 API。
-*   **高德地图 (Amap)**: 提供了地图和 POI 服务。
+*   **Anthropic** —— 提出 Model Context Protocol
+*   **港铁公司** 与 **data.gov.hk** —— 提供开放的实时交通 API
+*   **香港天文台** —— 提供开放的天气 API
+*   **高德地图** —— 提供地图与路径规划服务
 
 ---
 
-## 📄 许可证
+## 📄 许可协议
 
-本项目采用 MIT 许可证 - 详情请参阅 [LICENSE](LICENSE) 文件。
+MIT —— 详见 [LICENSE](LICENSE)。
