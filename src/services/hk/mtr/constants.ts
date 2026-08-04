@@ -1,5 +1,12 @@
 import { MTRLine, MTRStation } from './types.js';
 
+/**
+ * Stations the MTR Next Train API does not serve, verified by probing every
+ * line/station pair in this file against the live endpoint. They are real
+ * stations and route correctly; only arrival times are unavailable.
+ */
+export const STATIONS_WITHOUT_REALTIME = new Set(['TIN', 'PEK']);
+
 export const MTR_STATIONS: Record<string, MTRStation> = {
     // Island Line (ISL)
     KET: { code: 'KET', name: { en: 'Kennedy Town', zh: '坚尼地城' } },
@@ -59,6 +66,9 @@ export const MTR_STATIONS: Record<string, MTRStation> = {
     POA: { code: 'POA', name: { en: 'Po Lam', zh: '宝琳' } },
 
     // East Rail Line (EAL)
+    // Note: East Rail serves Mong Kok East (MKK), which is a separate station
+    // from Mong Kok (MOK) on TWL/KTL and is not a paid-area interchange.
+    MKK: { code: 'MKK', name: { en: 'Mong Kok East', zh: '旺角东' } },
     EXC: { code: 'EXC', name: { en: 'Exhibition Centre', zh: '会展' } },
     HUH: { code: 'HUH', name: { en: 'Hung Hom', zh: '红磡' } },
     TAW: { code: 'TAW', name: { en: 'Tai Wai', zh: '大围' } },
@@ -86,6 +96,7 @@ export const MTR_STATIONS: Record<string, MTRStation> = {
     KAT: { code: 'KAT', name: { en: 'Kai Tak', zh: '启德' } },
     SUW: { code: 'SUW', name: { en: 'Sung Wong Toi', zh: '宋皇台' } },
     TKW: { code: 'TKW', name: { en: 'To Kwa Wan', zh: '土瓜湾' } },
+    ETS: { code: 'ETS', name: { en: 'East Tsim Sha Tsui', zh: '尖东' } },
     AUS: { code: 'AUS', name: { en: 'Austin', zh: '柯士甸' } },
     NAC: { code: 'NAC', name: { en: 'Nam Cheong', zh: '南昌' } },
     TWW: { code: 'TWW', name: { en: 'Tsuen Wan West', zh: '荃湾西' } },
@@ -143,21 +154,25 @@ export const MTR_LINES: Record<string, MTRLine> = {
     TKL: {
         code: 'TKL',
         name: { en: 'Tseung Kwan O Line', zh: '将军澳线' },
-        stations: ['NOP', 'QUB', 'YAT', 'TIK', 'TKO', 'LHP', 'HAH', 'POA'],
-        upDest: 'POA', // Note: TKL has split branches (LHP/POA), simple logic usually picks main branch
+        stations: ['NOP', 'QUB', 'YAT', 'TIK', 'TKO', 'HAH', 'POA'],
+        upDest: 'POA',
         downDest: 'NOP',
+        // LOHAS Park is a spur off Tseung Kwan O, not a stop en route to Hang Hau.
+        branches: [{ junction: 'TKO', stations: ['LHP'] }],
     },
     EAL: {
         code: 'EAL',
         name: { en: 'East Rail Line', zh: '东铁线' },
-        stations: ['ADM', 'EXC', 'HUH', 'MOK', 'KOT', 'TAW', 'SHT', 'FOT', 'RAC', 'UNI', 'TAP', 'TWO', 'FAN', 'SHS', 'LOW', 'LMC'],
-        upDest: 'LOW', // EAL has split branches (LOW/LMC)
+        stations: ['ADM', 'EXC', 'HUH', 'MKK', 'KOT', 'TAW', 'SHT', 'FOT', 'RAC', 'UNI', 'TAP', 'TWO', 'FAN', 'SHS', 'LOW'],
+        upDest: 'LOW',
         downDest: 'ADM',
+        // Lok Ma Chau is a spur off Sheung Shui, parallel to Lo Wu.
+        branches: [{ junction: 'SHS', stations: ['LMC'] }],
     },
     TML: {
         code: 'TML',
         name: { en: 'Tuen Ma Line', zh: '屯马线' },
-        stations: ['WKS', 'MOS', 'HEO', 'TSH', 'SHM', 'CIO', 'STW', 'CKT', 'TAW', 'HIK', 'DIH', 'KAT', 'SUW', 'TKW', 'HOM', 'HUH', 'AUS', 'NAC', 'MEF', 'TWW', 'KSR', 'YUL', 'LOP', 'TIS', 'SIH', 'TUM'],
+        stations: ['WKS', 'MOS', 'HEO', 'TSH', 'SHM', 'CIO', 'STW', 'CKT', 'TAW', 'HIK', 'DIH', 'KAT', 'SUW', 'TKW', 'HOM', 'HUH', 'ETS', 'AUS', 'NAC', 'MEF', 'TWW', 'KSR', 'YUL', 'LOP', 'TIS', 'SIH', 'TUM'],
         upDest: 'TUM',
         downDest: 'WKS',
     },

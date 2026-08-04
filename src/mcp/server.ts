@@ -10,7 +10,7 @@ import { CrossBorderTransitService } from "../services/aggregator/cross_border/s
 export const createMcpServer = (): McpServer => {
     const mcpServer = new McpServer({
         name: "DragonMCP",
-        version: "0.3.0",
+        version: "0.4.0",
     });
 
 mcpServer.tool(
@@ -53,7 +53,7 @@ mcpServer.tool(
 
 mcpServer.tool(
     "search_mtr_schedule",
-    "Get real-time MTR train arrivals between two stations. Covers all 10 lines (Island, Tsuen Wan, Kwun Tong, Tseung Kwan O, East Rail, Tuen Ma, South Island, Tung Chung, Airport Express, Disneyland Resort). Direct routes only — no transfer planning.",
+    "Plan an MTR journey between any two stations and get real-time arrivals for the boarding leg. Covers all 10 lines and all 98 stations, including transfers. Routes minimise the number of transfers, not travel time — no inter-station running times are available, so this does not claim to find the fastest route.",
     {
         from: z.string().describe("Starting station name in English or Chinese (e.g., Admiralty, Central, Lo Wu, 金钟)"),
         to: z.string().describe("Destination station name"),

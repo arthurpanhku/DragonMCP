@@ -65,7 +65,7 @@ Territories West.
 
 | Tool | Source | API key | What it does |
 | :--- | :--- | :--- | :--- |
-| `search_mtr_schedule` | MTR via data.gov.hk | — | Real-time arrivals between two stations, **all 10 lines** |
+| `search_mtr_schedule` | MTR via data.gov.hk | — | Journey planning **with transfers** + real-time arrivals; all 10 lines, all 98 stations |
 | `hk_weather_current` | HK Observatory | — | Current conditions + active warnings |
 | `search_transit_route` | MTR / Amap | CN only | Unified HK/CN routing; picks the right provider |
 | `system_run_selftest` | all of the above | — | Live reachability check of every upstream |
@@ -85,8 +85,9 @@ Island (港岛线) · Tsuen Wan (荃湾线) · Kwun Tong (观塘线) · Tseung K
 
 Stated up front, because a tool that hides its limits is a tool that lies to your agent:
 
-- **No MTR transfer planning.** Direct routes only. Two stations that don't share a line return an explicit "no direct line found", not a guess.
-- **East Rail and Tseung Kwan O branch handling is simplified.** Both lines split (LOW/LMC, LHP/POA); the server picks the main branch.
+- **Routes minimise transfers, not travel time.** No inter-station running times are published, so we optimise for the thing we can actually measure. Occasionally a two-transfer route is faster than the one-transfer route returned.
+- **Real-time arrivals cover the boarding leg only.** Without running times we cannot say when you will reach a transfer station, so quoting arrivals for later legs would be invention.
+- **Two stations have no real-time feed.** The upstream API serves no arrivals for Tin Hau or Prince Edward. Routing through them works; arrivals at them are reported as unavailable rather than faked.
 - **Amap tools need your own key** and cover Mainland China only.
 - **Cross-border journey planning is not built yet.** East Rail reaches the border stations, but stitching a full HK→Shenzhen itinerary is Stage 2 on the roadmap.
 

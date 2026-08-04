@@ -25,17 +25,17 @@ describe('MCP stdio transport', () => {
             const { tools } = await client.listTools();
             expect(tools.some(({ name }) => name === 'search_mtr_schedule')).toBe(true);
 
-            // Central (ISL/TWL) and Lo Wu (EAL) share no line, so routing fails
-            // locally without touching the network — keeps this test hermetic.
+            // An unknown station fails during local lookup, so this exercises the
+            // transport end to end without touching the network.
             const result = CallToolResultSchema.parse(await client.callTool({
                 name: 'search_mtr_schedule',
-                arguments: { from: 'Central', to: 'Lo Wu' },
+                arguments: { from: 'Atlantis', to: 'Central' },
             }));
             const textContent = result.content.find((item) => item.type === 'text');
 
             expect(textContent).toMatchObject({
                 type: 'text',
-                text: expect.stringContaining('No direct line found'),
+                text: expect.stringContaining('Station not found: Atlantis'),
             });
         } finally {
             await client.close();
