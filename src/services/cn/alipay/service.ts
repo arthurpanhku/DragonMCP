@@ -5,7 +5,7 @@ export class AlipayService {
      * Create a payment order (Mock)
      */
     static async createOrder(order: Partial<AlipayOrder>): Promise<AlipayResponse> {
-        console.log('[Alipay] Creating order:', order);
+        console.error('[Alipay] Creating order:', order);
 
         return {
             code: '10000',
@@ -19,7 +19,7 @@ export class AlipayService {
      * Query order status (Mock)
      */
     static async queryOrder(outTradeNo: string): Promise<any> {
-        console.log('[Alipay] Querying order:', outTradeNo);
+        console.error('[Alipay] Querying order:', outTradeNo);
         return {
             tradeStatus: 'TRADE_SUCCESS',
         };

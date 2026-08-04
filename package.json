@@ -7,7 +7,9 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/server.js",
+    "start:stdio": "node dist/stdio.js",
     "dev": "nodemon",
+    "dev:stdio": "tsx src/stdio.ts",
     "lint": "eslint .",
     "check": "tsc --noEmit",
     "test": "NODE_OPTIONS=\"--experimental-vm-modules\" jest",

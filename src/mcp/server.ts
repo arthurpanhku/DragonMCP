@@ -14,11 +14,12 @@ import { NaverMapService } from "../services/kr/naver/service.js";
 import { TestService } from "../services/system/test/service.js";
 import { AsiaTransitService } from "../services/aggregator/asia_transit/service.js";
 
-// Create an MCP server
-export const mcpServer = new McpServer({
-    name: "DragonMCP",
-    version: "1.0.0",
-});
+// Create a fresh MCP server for each stateful transport session.
+export const createMcpServer = (): McpServer => {
+    const mcpServer = new McpServer({
+        name: "DragonMCP",
+        version: "1.0.0",
+    });
 
 mcpServer.tool(
     "system_run_selftest",
@@ -320,3 +321,9 @@ mcpServer.tool(
         };
     }
 );
+
+    return mcpServer;
+};
+
+// Keep one instance for the legacy SSE endpoint.
+export const mcpServer = createMcpServer();

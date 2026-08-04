@@ -5,7 +5,7 @@ export class GrabService {
      * Estimate ride price (Mock)
      */
     static async estimateRide(request: GrabRideRequest): Promise<GrabRideEstimate> {
-        console.log('[Grab] Estimating ride:', request);
+        console.error('[Grab] Estimating ride:', request);
 
         // Mock logic
         return {
@@ -19,7 +19,7 @@ export class GrabService {
      * Book a ride (Mock)
      */
     static async bookRide(request: GrabRideRequest): Promise<string> {
-        console.log('[Grab] Booking ride:', request);
+        console.error('[Grab] Booking ride:', request);
         return 'grab_booking_sg_12345';
     }
 }

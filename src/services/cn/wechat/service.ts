@@ -5,7 +5,7 @@ export class WeChatPayService {
      * Create a unified order (Mock)
      */
     static async createOrder(order: Partial<WeChatPayOrder>): Promise<WeChatPayResponse> {
-        console.log('[WeChatPay] Creating order:', order);
+        console.error('[WeChatPay] Creating order:', order);
 
         // Mock response
         return {
@@ -19,7 +19,7 @@ export class WeChatPayService {
      * Query order status (Mock)
      */
     static async queryOrder(outTradeNo: string): Promise<any> {
-        console.log('[WeChatPay] Querying order:', outTradeNo);
+        console.error('[WeChatPay] Querying order:', outTradeNo);
         return {
             trade_state: 'SUCCESS',
             trade_state_desc: 'Payment success',

@@ -5,7 +5,7 @@ export class DidiService {
      * Estimate ride price (Mock)
      */
     static async estimatePrice(request: RideRequest): Promise<RideEstimate> {
-        console.log('[Didi] Estimating price:', request);
+        console.error('[Didi] Estimating price:', request);
 
         // Mock logic based on coordinates or random
         return {
@@ -19,7 +19,7 @@ export class DidiService {
      * Request a ride (Mock)
      */
     static async requestRide(request: RideRequest): Promise<string> {
-        console.log('[Didi] Requesting ride:', request);
+        console.error('[Didi] Requesting ride:', request);
         return 'ride_order_123456';
     }
 }

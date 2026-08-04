@@ -5,7 +5,7 @@ export class NaverMapService {
      * Search for places (Mock)
      */
     static async searchPlace(keyword: string): Promise<NaverPOI[]> {
-        console.log('[NaverMap] Searching place:', keyword);
+        console.error('[NaverMap] Searching place:', keyword);
 
         // Mock data
         return [

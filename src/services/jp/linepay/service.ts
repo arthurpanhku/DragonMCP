@@ -5,7 +5,7 @@ export class LinePayService {
      * Request payment (Mock)
      */
     static async requestPayment(order: LinePayOrder): Promise<LinePayResponse> {
-        console.log('[LinePay] Requesting payment:', order);
+        console.error('[LinePay] Requesting payment:', order);
 
         return {
             returnCode: '0000',
