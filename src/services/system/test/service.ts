@@ -1,6 +1,7 @@
 import { MTRService } from "../../hk/mtr/service.js";
 import { AmapService } from "../../cn/amap/service.js";
 import { HKWeatherService } from "../../hk/weather/service.js";
+import { HKTropicalWarningService } from "../../hk/typhoon/service.js";
 import { TestResult, SystemHealthReport } from "./types.js";
 
 export class TestService {
@@ -19,6 +20,9 @@ export class TestService {
 
         // 3. Test HK Weather Service
         results.push(await this.testHKWeather());
+
+        // 4. Test HK warning endpoints
+        results.push(await this.testHKWarnings());
 
         // Summarize
         const passedTests = results.filter(r => r.status === 'PASS').length;
@@ -120,6 +124,28 @@ export class TestService {
             return {
                 service: 'Weather (HK)',
                 tool: 'hk_weather_current',
+                status: 'FAIL',
+                message: error.message || 'Unknown error',
+                duration: Date.now() - start
+            };
+        }
+    }
+
+    private static async testHKWarnings(): Promise<TestResult> {
+        const start = Date.now();
+        try {
+            await HKTropicalWarningService.getWarningStatus();
+            return {
+                service: 'Warnings (HK)',
+                tool: 'hk_typhoon_signal',
+                status: 'PASS',
+                message: 'Successfully fetched warning status.',
+                duration: Date.now() - start
+            };
+        } catch (error: any) {
+            return {
+                service: 'Warnings (HK)',
+                tool: 'hk_typhoon_signal',
                 status: 'FAIL',
                 message: error.message || 'Unknown error',
                 duration: Date.now() - start
