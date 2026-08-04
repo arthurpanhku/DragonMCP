@@ -3,27 +3,19 @@ import { z } from "zod";
 import { MTRService } from "../services/hk/mtr/service.js";
 import { HKWeatherService } from "../services/hk/weather/service.js";
 import { AmapService } from "../services/cn/amap/service.js";
-import { WeChatPayService } from "../services/cn/wechat/service.js";
-import { AlipayService } from "../services/cn/alipay/service.js";
-import { DidiService } from "../services/cn/didi/service.js";
-import { MeituanService } from "../services/cn/meituan/service.js";
-import { TaobaoService } from "../services/cn/taobao/service.js";
-import { GrabService } from "../services/sg/grab/service.js";
-import { LinePayService } from "../services/jp/linepay/service.js";
-import { NaverMapService } from "../services/kr/naver/service.js";
 import { TestService } from "../services/system/test/service.js";
-import { AsiaTransitService } from "../services/aggregator/asia_transit/service.js";
+import { CrossBorderTransitService } from "../services/aggregator/cross_border/service.js";
 
 // Create a fresh MCP server for each stateful transport session.
 export const createMcpServer = (): McpServer => {
     const mcpServer = new McpServer({
         name: "DragonMCP",
-        version: "1.0.0",
+        version: "0.3.0",
     });
 
 mcpServer.tool(
     "system_run_selftest",
-    "Run a self-test of all critical services to check system health",
+    "Run a live health check against every upstream data source (MTR, HK Observatory, Amap). Returns which sources are reachable right now.",
     {},
     async () => {
         const report = await TestService.runSelfTest();
@@ -39,16 +31,16 @@ mcpServer.tool(
 );
 
 mcpServer.tool(
-    "search_transit_asia",
-    "Unified transit search for Asian regions (CN, HK, JP, KR, SG). Automatically routes to the best provider.",
+    "search_transit_route",
+    "Unified transit search for Hong Kong and Mainland China. Routes HK queries to live MTR schedules and CN queries to Amap transit planning.",
     {
         from: z.string().describe("Origin (Address, Station Name, or Coordinates)"),
         to: z.string().describe("Destination (Address, Station Name, or Coordinates)"),
-        region: z.enum(["CN", "HK", "JP", "KR", "SG"]).describe("Region code"),
+        region: z.enum(["HK", "CN"]).describe("Region code"),
         city: z.string().optional().describe("City name (helpful for POI resolution in CN)"),
     },
     async ({ from, to, region, city }) => {
-        const result = await AsiaTransitService.searchRoute(from, to, region, city);
+        const result = await CrossBorderTransitService.searchRoute(from, to, region, city);
         return {
             content: [{ type: "text", text: result }],
         };
@@ -56,14 +48,14 @@ mcpServer.tool(
 );
 
 // -------------------------------------------------------------------------
-// Travel Tools (Greater China)
+// Hong Kong (data.gov.hk — no API key required)
 // -------------------------------------------------------------------------
 
 mcpServer.tool(
     "search_mtr_schedule",
-    "Search for real-time MTR train schedule (Island Line & Tsuen Wan Line)",
+    "Get real-time MTR train arrivals between two stations. Covers all 10 lines (Island, Tsuen Wan, Kwun Tong, Tseung Kwan O, East Rail, Tuen Ma, South Island, Tung Chung, Airport Express, Disneyland Resort). Direct routes only — no transfer planning.",
     {
-        from: z.string().describe("Starting station name (e.g., Admiralty, Central, Mong Kok)"),
+        from: z.string().describe("Starting station name in English or Chinese (e.g., Admiralty, Central, Lo Wu, 金钟)"),
         to: z.string().describe("Destination station name"),
     },
     async ({ from, to }) => {
@@ -76,7 +68,7 @@ mcpServer.tool(
 
 mcpServer.tool(
     "hk_weather_current",
-    "Get current weather report from Hong Kong Observatory",
+    "Get the current weather report and active warnings from the Hong Kong Observatory",
     {},
     async () => {
         const result = await HKWeatherService.getCurrentWeather();
@@ -86,9 +78,13 @@ mcpServer.tool(
     }
 );
 
+// -------------------------------------------------------------------------
+// Mainland China (Amap — requires AMAP_API_KEY)
+// -------------------------------------------------------------------------
+
 mcpServer.tool(
     "amap_search_poi",
-    "Search for Places of Interest (POI) using Amap (Gaode Map)",
+    "Search for Places of Interest (POI) in Mainland China using Amap (Gaode Map)",
     {
         keywords: z.string().describe("Keywords to search for (e.g. 'restaurant', 'hotel')"),
         city: z.string().optional().describe("City name or code (optional)"),
@@ -158,166 +154,6 @@ mcpServer.tool(
         const result = await AmapService.getBicyclingDirection(origin, destination);
         return {
             content: [{ type: "text", text: result }],
-        };
-    }
-);
-
-mcpServer.tool(
-    "book_taxi_didi",
-    "Estimate and book a taxi via Didi (Mock/Demo Only)",
-    {
-        originLat: z.number().describe("Origin Latitude"),
-        originLng: z.number().describe("Origin Longitude"),
-        destLat: z.number().describe("Destination Latitude"),
-        destLng: z.number().describe("Destination Longitude"),
-    },
-    async ({ originLat, originLng, destLat, destLng }) => {
-        const request = {
-            origin: { lat: originLat, lng: originLng },
-            destination: { lat: destLat, lng: destLng }
-        };
-        const estimate = await DidiService.estimatePrice(request);
-        const orderId = await DidiService.requestRide(request);
-
-        return {
-            content: [{ type: "text", text: `[Mock] Didi Ride Booked!\nOrder ID: ${orderId}\nEstimated Price: ${estimate.price} CNY\nDuration: ${estimate.duration} mins` }],
-        };
-    }
-);
-
-// -------------------------------------------------------------------------
-// Travel Tools (Asia Expansion)
-// -------------------------------------------------------------------------
-
-mcpServer.tool(
-    "book_ride_grab",
-    "Estimate and book a ride via Grab (Singapore/SE Asia) (Mock/Demo Only)",
-    {
-        pickup: z.string().describe("Pickup location name or address"),
-        dropoff: z.string().describe("Dropoff location name or address"),
-        serviceType: z.enum(["JustGrab", "GrabCar", "GrabHitch"]).default("JustGrab").describe("Service type"),
-    },
-    async ({ pickup, dropoff, serviceType }) => {
-        const estimate = await GrabService.estimateRide({ pickup, dropoff, serviceType: serviceType as any });
-        const bookingId = await GrabService.bookRide({ pickup, dropoff, serviceType: serviceType as any });
-        return {
-            content: [{ type: "text", text: `[Mock] Grab Ride Booked!\nBooking ID: ${bookingId}\nPrice: ${estimate.currency} ${estimate.price}\nETA: ${estimate.estimatedTime} mins` }],
-        };
-    }
-);
-
-mcpServer.tool(
-    "naver_map_search",
-    "Search for places in Korea using Naver Maps (Mock/Demo Only)",
-    {
-        keyword: z.string().describe("Search keyword (e.g. 'BBQ', 'Hotel')"),
-    },
-    async ({ keyword }) => {
-        const results = await NaverMapService.searchPlace(keyword);
-        const text = results.map(r => `- ${r.title} (${r.category})\n  Address: ${r.roadAddress}`).join('\n');
-        return {
-            content: [{ type: "text", text: `[Mock] Naver Map Results for "${keyword}":\n${text}` }],
-        };
-    }
-);
-
-
-// -------------------------------------------------------------------------
-// Payment Tools (Greater China)
-// -------------------------------------------------------------------------
-
-mcpServer.tool(
-    "wechat_pay_create",
-    "Initiate a WeChat Pay transaction (Mock/Demo Only)",
-    {
-        amount: z.number().describe("Amount to pay in CNY (converted to cents internally)"),
-        description: z.string().describe("Description of the payment"),
-        outTradeNo: z.string().optional().describe("Unique trade number"),
-    },
-    async ({ amount, description, outTradeNo }) => {
-        const result = await WeChatPayService.createOrder({
-            totalFee: Math.round(amount * 100),
-            body: description,
-            outTradeNo: outTradeNo || `order_${Date.now()}`,
-        });
-        return {
-            content: [{ type: "text", text: `[Mock] WeChat Pay Order Created.\nCode: ${result.return_code}\nMsg: ${result.return_msg}` }],
-        };
-    }
-);
-
-mcpServer.tool(
-    "alipay_pay_create",
-    "Initiate an Alipay transaction (Mock/Demo Only)",
-    {
-        amount: z.string().describe("Amount to pay in CNY"),
-        subject: z.string().describe("Order subject/title"),
-        outTradeNo: z.string().optional().describe("Unique trade number"),
-    },
-    async ({ amount, subject, outTradeNo }) => {
-        const result = await AlipayService.createOrder({
-            totalAmount: amount,
-            subject: subject,
-            outTradeNo: outTradeNo,
-        });
-        return {
-            content: [{ type: "text", text: `[Mock] Alipay Order Created.\nTrade No: ${result.outTradeNo}\nQR Code: ${result.qrCode}` }],
-        };
-    }
-);
-
-// -------------------------------------------------------------------------
-// Payment Tools (Asia Expansion)
-// -------------------------------------------------------------------------
-
-mcpServer.tool(
-    "line_pay_request",
-    "Request a payment via LINE Pay (Japan/Taiwan/Thailand) (Mock/Demo Only)",
-    {
-        amount: z.number().describe("Amount to pay"),
-        currency: z.string().default("JPY").describe("Currency code (JPY, TWD, THB)"),
-        productName: z.string().describe("Product name"),
-        orderId: z.string().describe("Unique order ID"),
-    },
-    async ({ amount, currency, productName, orderId }) => {
-        const result = await LinePayService.requestPayment({ amount, currency, productName, orderId });
-        return {
-            content: [{ type: "text", text: `[Mock] LINE Pay Request Success.\nTransaction ID: ${result.info.transactionId}\nPayment URL: ${result.info.paymentUrl.web}` }],
-        };
-    }
-);
-
-// -------------------------------------------------------------------------
-// Lifestyle & E-commerce Tools
-// -------------------------------------------------------------------------
-
-mcpServer.tool(
-    "meituan_search_food",
-    "Search for food/restaurants on Meituan (Mock/Demo Only)",
-    {
-        keyword: z.string().describe("Food or restaurant name"),
-        location: z.string().describe("Current location or address"),
-    },
-    async ({ keyword, location }) => {
-        const results = await MeituanService.searchRestaurants(keyword, location);
-        const text = results.map(r => `- ${r.name} (Rating: ${r.rating}, Min: ${r.minOrder})`).join('\n');
-        return {
-            content: [{ type: "text", text: `[Mock] Meituan Results for "${keyword}":\n${text}` }],
-        };
-    }
-);
-
-mcpServer.tool(
-    "taobao_search_product",
-    "Search for products on Taobao (Mock/Demo Only)",
-    {
-        keyword: z.string().describe("Product keyword"),
-    },
-    async ({ keyword }) => {
-        const results = await TaobaoService.searchProducts(keyword);
-        const text = results.map(p => `- ${p.title} (Price: ¥${p.price}, Sales: ${p.sales})`).join('\n');
-        return {
-            content: [{ type: "text", text: `[Mock] Taobao Results for "${keyword}":\n${text}` }],
         };
     }
 );

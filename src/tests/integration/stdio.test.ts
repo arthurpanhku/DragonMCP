@@ -23,17 +23,19 @@ describe('MCP stdio transport', () => {
             await client.connect(transport);
 
             const { tools } = await client.listTools();
-            expect(tools.some(({ name }) => name === 'taobao_search_product')).toBe(true);
+            expect(tools.some(({ name }) => name === 'search_mtr_schedule')).toBe(true);
 
+            // Central (ISL/TWL) and Lo Wu (EAL) share no line, so routing fails
+            // locally without touching the network — keeps this test hermetic.
             const result = CallToolResultSchema.parse(await client.callTool({
-                name: 'taobao_search_product',
-                arguments: { keyword: 'MCP' },
+                name: 'search_mtr_schedule',
+                arguments: { from: 'Central', to: 'Lo Wu' },
             }));
             const textContent = result.content.find((item) => item.type === 'text');
 
             expect(textContent).toMatchObject({
                 type: 'text',
-                text: expect.stringContaining('Taobao Results'),
+                text: expect.stringContaining('No direct line found'),
             });
         } finally {
             await client.close();

@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] - 2026-08-04
+
+Refocused the project on Hong Kong and cross-border open data. Every remaining tool
+calls a live API; the mock tools are gone.
+
+### Removed
+- **All 8 mock services**: WeChat Pay, Alipay, Didi, Meituan, Taobao (CN), Grab (SG), LINE Pay (JP), Naver Maps (KR). These returned fabricated data that an agent could not distinguish from real results.
+- **Mock transit branches** for JP/KR/SG in the transit aggregator.
+- **9 zero-import dependencies**: `@supabase/supabase-js`, `bull`, `crypto-js`, `helmet`, `joi`, `redis`, `uuid`, `winston`, `concurrently`.
+- **Unused config**: Supabase, Redis, JWT/encryption secrets, WeChat, Alipay and Baidu Map settings. `JWT_SECRET` and `ENCRYPTION_KEY` are no longer required in production — nothing read them.
+- **Stale translated READMEs** (de, fr, ja, ko), which documented the removed services.
+
+### Changed
+- **`search_transit_asia` renamed to `search_transit_route`**, scoped to `HK` and `CN`. The old name advertised Asia-wide coverage that was mock-only. **Breaking change.**
+- **Aggregator** `services/aggregator/asia_transit` renamed to `services/aggregator/cross_border`; `AsiaTransitService` to `CrossBorderTransitService`.
+- **`system_run_selftest`** documented as a live upstream reachability probe.
+- **README** rewritten around verifiable data, with a Limitations section stating what the server cannot do.
+
+### Fixed
+- **MTR line coverage was under-documented.** All 10 lines were already implemented, but the README and an error message both claimed only Island and Tsuen Wan lines were supported.
+- **Tuen Ma Line** was labelled "Tuen Mun Line" in English.
+- **stdio integration test** called the removed `taobao_search_product`; it now exercises MTR routing offline.
+
 ## [0.2.0] - 2026-03-09
 
 ### Added

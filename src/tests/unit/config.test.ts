@@ -7,8 +7,7 @@ describe('Configuration', () => {
     });
 
     it('should load environment variables', () => {
-        // Assuming .env or default values are set
-        expect(config.redis.url).toBeDefined();
-        expect(config.security.jwtSecret).toBeDefined();
+        // Amap is the only external credential the server reads.
+        expect(config.external.amap.apiKey).toBeDefined();
     });
 });

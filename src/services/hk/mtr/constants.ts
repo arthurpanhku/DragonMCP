@@ -156,7 +156,7 @@ export const MTR_LINES: Record<string, MTRLine> = {
     },
     TML: {
         code: 'TML',
-        name: { en: 'Tuen Mun Line', zh: '屯马线' },
+        name: { en: 'Tuen Ma Line', zh: '屯马线' },
         stations: ['WKS', 'MOS', 'HEO', 'TSH', 'SHM', 'CIO', 'STW', 'CKT', 'TAW', 'HIK', 'DIH', 'KAT', 'SUW', 'TKW', 'HOM', 'HUH', 'AUS', 'NAC', 'MEF', 'TWW', 'KSR', 'YUL', 'LOP', 'TIS', 'SIH', 'TUM'],
         upDest: 'TUM',
         downDest: 'WKS',

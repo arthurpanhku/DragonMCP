@@ -19,18 +19,36 @@ Thank you for your interest in contributing to DragonMCP! We welcome contributio
     git checkout -b feature/my-new-feature
     ```
 
+## The one hard rule: no mock tools
+
+**A tool that returns fabricated data is worse than a missing tool**, because the agent
+cannot tell the difference and will present the fiction to the user as fact. If an
+upstream API is unavailable to you, do not register the tool.
+
+This means:
+- Every registered tool must call a real API.
+- When an upstream fails, return an explicit error — never a plausible-looking fallback.
+- Add your data source to `system_run_selftest` so its liveness is publicly checkable.
+
+Scope is Hong Kong and the Mainland China border region. Open public data sources
+(`data.gov.hk` and equivalents) are strongly preferred: no keys, no rate-limit paperwork,
+and no terms-of-service risk.
+
 ## Development Workflow
 
 ### Project Structure
-- `src/services/`: Contains all service implementations organized by region (`cn`, `hk`, `sg`, `jp`, `kr`).
-- `src/mcp/`: Contains the MCP server definition and tool registration.
-- `src/tests/`: Contains unit and integration tests.
+- `src/services/<region>/<service>/`: Service implementations. Regions in use: `hk`, `cn`.
+- `src/services/aggregator/`: Tools that combine multiple regions.
+- `src/services/system/`: Self-test and diagnostics.
+- `src/mcp/`: MCP server definition and tool registration.
+- `src/tests/`: Unit and integration tests.
 
 ### Adding a New Service
 1.  Create a new directory in `src/services/<region>/<service-name>`.
 2.  Implement the service logic in `service.ts` and types in `types.ts`.
 3.  Register the new tool in `src/mcp/server.ts`.
-4.  Add unit tests in `src/tests/`.
+4.  Add the upstream to `src/services/system/test/service.ts`.
+5.  Add tests in `src/tests/`. **Tests must not depend on the network** — CI has no API keys.
 
 ### Testing
 We use Jest for testing. Please ensure all tests pass before submitting a PR.

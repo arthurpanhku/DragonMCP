@@ -67,7 +67,7 @@ export class MTRService {
 
         const route = this.findRoute(fromCode, toCode);
         if (!route) {
-            return `No direct line found between ${from} and ${to}. Please try a transfer or check station names. (Currently supporting Island Line and Tsuen Wan Line)`;
+            return `No direct line found between ${from} and ${to}. Both stations exist, but they are not on a single line — transfer planning is not supported yet.`;
         }
 
         try {
