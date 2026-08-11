@@ -1,6 +1,7 @@
 import { MTRService } from "../../hk/mtr/service.js";
 import { AmapService } from "../../cn/amap/service.js";
 import { HKWeatherService } from "../../hk/weather/service.js";
+import { TyphoonSignalService } from "../../hk/typhoon/service.js";
 import { TestResult, SystemHealthReport } from "./types.js";
 
 export class TestService {
@@ -19,6 +20,9 @@ export class TestService {
 
         // 3. Test HK Weather Service
         results.push(await this.testHKWeather());
+
+        // 4. Test HK Typhoon Signal Service
+        results.push(await this.testHKTyphoonSignal());
 
         // Summarize
         const passedTests = results.filter(r => r.status === 'PASS').length;
@@ -120,6 +124,37 @@ export class TestService {
             return {
                 service: 'Weather (HK)',
                 tool: 'hk_weather_current',
+                status: 'FAIL',
+                message: error.message || 'Unknown error',
+                duration: Date.now() - start
+            };
+        }
+    }
+
+    private static async testHKTyphoonSignal(): Promise<TestResult> {
+        const start = Date.now();
+        try {
+            const result = await TyphoonSignalService.getTyphoonSignals();
+            if (!result.typhoonSignal || !result.rainstormSignal) {
+                return {
+                    service: 'Typhoon Signal (HK)',
+                    tool: 'hk_typhoon_signal',
+                    status: 'FAIL',
+                    message: 'Invalid response structure from HKO warning API',
+                    duration: Date.now() - start
+                };
+            }
+            return {
+                service: 'Typhoon Signal (HK)',
+                tool: 'hk_typhoon_signal',
+                status: 'PASS',
+                message: 'Successfully fetched typhoon signals.',
+                duration: Date.now() - start
+            };
+        } catch (error: any) {
+            return {
+                service: 'Typhoon Signal (HK)',
+                tool: 'hk_typhoon_signal',
                 status: 'FAIL',
                 message: error.message || 'Unknown error',
                 duration: Date.now() - start

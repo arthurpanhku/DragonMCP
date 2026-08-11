@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { MTRService } from "../services/hk/mtr/service.js";
 import { HKWeatherService } from "../services/hk/weather/service.js";
+import { TyphoonSignalService } from "../services/hk/typhoon/service.js";
 import { AmapService } from "../services/cn/amap/service.js";
 import { TestService } from "../services/system/test/service.js";
 import { CrossBorderTransitService } from "../services/aggregator/cross_border/service.js";
@@ -74,6 +75,21 @@ mcpServer.tool(
         const result = await HKWeatherService.getCurrentWeather();
         return {
             content: [{ type: "text", text: result }],
+        };
+    }
+);
+
+mcpServer.tool(
+    "hk_typhoon_signal",
+    "Get structured typhoon and rainstorm warnings from the Hong Kong Observatory. Returns current tropical cyclone signal (nil, 1, 3, 8NE, 8SE, 8NW, 8SW, 9, 10), rainstorm signal (nil, amber, red, black), issue times, and any other active warnings.",
+    {},
+    async () => {
+        const result = await TyphoonSignalService.getTyphoonSignals();
+        return {
+            content: [{
+                type: "text",
+                text: JSON.stringify(result, null, 2),
+            }],
         };
     }
 );
