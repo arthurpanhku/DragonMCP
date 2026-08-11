@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+- **Structured Hong Kong warning status** via `hk_typhoon_signal`, backed by the Observatory's `warnsum` and `warningInfo` feeds. It exposes discrete typhoon and rainstorm signal values, issue/update times, other active warnings, and an explicit no-signals state.
+- **Network-free warning tests and live self-test coverage** for the two warning endpoints.
+
 ## [0.4.0] - 2026-08-04
 
 MTR journey planning with transfers. Routable station pairs went from 901 to 4753

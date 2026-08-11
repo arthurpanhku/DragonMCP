@@ -16,6 +16,7 @@ DragonMCP is a Model Context Protocol (MCP) server providing Hong Kong and cross
 ### Hong Kong (no API key)
 - `search_mtr_schedule(from, to)`: Real-time MTR arrivals. Direct routes only; no transfer planning.
 - `hk_weather_current()`: HK Observatory weather report and warnings.
+- `hk_typhoon_signal()`: Structured active typhoon, rainstorm, and other warning status from the HK Observatory.
 
 ### Mainland China (requires AMAP_API_KEY)
 - `amap_search_poi(keywords, city)`: Search places in Mainland China.

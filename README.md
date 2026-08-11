@@ -67,6 +67,7 @@ Territories West.
 | :--- | :--- | :--- | :--- |
 | `search_mtr_schedule` | MTR via data.gov.hk | — | Journey planning **with transfers** + real-time arrivals; all 10 lines, all 98 stations |
 | `hk_weather_current` | HK Observatory | — | Current conditions + active warnings |
+| `hk_typhoon_signal` | HK Observatory | — | Structured typhoon, rainstorm, and other active warning status |
 | `search_transit_route` | MTR / Amap | CN only | Unified HK/CN routing; picks the right provider |
 | `system_run_selftest` | all of the above | — | Live reachability check of every upstream |
 | `amap_search_poi` | Amap (Gaode) | ✅ | POI search in Mainland China |
