@@ -81,7 +81,7 @@ mcpServer.tool(
 
 mcpServer.tool(
     "hk_typhoon_signal",
-    "Get structured active tropical cyclone, rainstorm, and other weather warnings from the Hong Kong Observatory",
+    "Get structured active tropical cyclone, rainstorm, and other weather warnings from the Hong Kong Observatory. Returns the tropical cyclone signal (null, 1, 3, 8NE, 8SE, 8SW, 8NW, 9, 10), the rainstorm signal (null, amber, red, black), issue and update times, and any other warnings in force.",
     {},
     async () => {
         const result = await HKTropicalWarningService.getWarningStatus();
